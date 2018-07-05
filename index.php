@@ -1,80 +1,69 @@
 <?php
-/*
-Каждая категория имеет свой ID, задаваемый функцией setAuthId(принимает целочисленные значения - иначе- сообщение об ошибке).  
-
-У категории есть свойство, содержащее массив catInс, где хранятся ID катерогий, включенных в данную категорию. Массив push'ится методом setCatInc(целочисленный ID)*/
-//some changes test
-//test2
-
-//										author
  class Author
  {
-	public $authId;
 	public $lastName;
 	public $firstName;
 	public $patronimic;
 	public $avatarPath;
 	public $sign;
 
-	public function __construct($authId, $lastName = null, $firstName, $patronimic, $avatarPath, $sign) 
+	public function __construct($lastName = "", $firstName = "", $patronimic = "", $avatarPath = "", $sign = "") 
  	{
- 		//зануляем свойства, необязательные к присвоению новому экземпляру (делать это здесь или в параметрах, принимаемых констрактом?)
- 		setAuthId($authId);
+ 		if(!empty($lastName)&&!empty($firstName)&&!empty($patronimic)&&!empty($avatarPath)&&!empty($sign))
+ 		{
+	 		$this->lastName = $lastName;
+			$this->firstName = $firstName;
+			$this->patronimic = $patronimic;
+			$this->avatarPath = $avatarPath;
+			$this->sign = $sign;
+ 		}
+ 		/*
  		setFirstName($firstname);
- 		setLastName($lastname = null);
- 		setPatronimic($patronimic = null);
- 		setAvPath($avatarPath = null);
- 		setSign($sign = null);
+ 		setLastName($lastname);
+ 		setPatronimic($patronimic);
+ 		setAv($avatarPath);
+ 		setSign($sign);
+ 		*/
  	}
-
-	public function getAuthId()
-	{
-		return(int) $this->$authId;
-	}
-
-	public function setAuthId(int $authId)
-	{
-		$this->authId = $authId;
-	}
-
+ 	//
 	public function getLastName() 
 	{
-		return(string) $this->lastName;
+		return $this->lastName;
 	}
 	public function setLastName(string $lastName) {
 		$this->lastName = $lastName;
 	}
-
+	//
  	public function getFirstName() 
  	{
-		return(string) $this->firstName;
+		return $this->firstName;
 	}
 	public function setFirstName(string $firstName) 
 	{
 		$this->firstName = $firstName;
 	}
-
+	//
  	public function getPatronimic()
  	{
- 		return(string) $this->patronimic;
+ 		return $this->patronimic;
  	}
  	public function setPatronimic(string $patronimic)
  	{
  		$this->patronimic = $patronimic;
-	 }
-
-	  public function getAvPath()
+	}
+	//
+	 public function getAv()
 	 {
-	 	return(string) $this->avatarPath;
+	 	return $this->avatarPath;
 	 }
-
-	 public function setAvPath(string $avatarPath)
+	 public function setAv(string $avatarPath)
 	 {
 	 	$this->avatarPath = $avatarPath;
 	 }
+	 //
 	 public function getSign()
 	 {
-	 	return(string) $this->sign;
+	 	return $this->sign;
 	 }
 	 	public function setSign(string $sign)
 	 {
@@ -83,106 +72,103 @@
  }
 
  class News {
- 	public $newsId;
  	public $header;
  	public $announcement;
  	public $text;
- 	private $authId;
-	public $catIdArr = array();
-	public function __construct($newsId, $header, $announcement, $text, $authorId, $catIdArr)
+ 	public $catArr = [];
+	public $catName;
+	public function __construct($header = "", $announcement = "", $text = "", $catArr = "")
  	{
- 		setNewsID($newsId);
+ 		if(!empty($header)&&!empty($announcement)&&!empty($text)&&!empty($catArr))
+ 		{
+	 		$this->header = $header;
+			$this->announcement = $announcement;
+	 		$this->text = $text;
+	 		$this->catArr = $catArr;
+			$this->catName = $catName;
+ 		}
+ 		/*
  		setHeader($header);
- 		setAnnouncement($announcement = null);
+ 		setAnnouncement($announcement);
  		setText($text);
- 		setAuth($authId);
- 		setCatInc($catInc = null);
+ 		setAuth($author);
+ 		setCat($catInc);
+ 		*/
  	}
-
- 	public function getNewsID()
- 	{
- 		return(int) $this->newsId;
- 	}
- 	public function setNewsID(int $setNewsID){
- 			$this->id = $newsId;
- 	}
-
+ 	//
  	public function getHeader(){
- 		return(string) $this->header;
+ 		return $this->header;
  	}
  	public function setHeader(string $header){
- 			$this->header = $header;
+ 		$this->header = $header;
  	}
-
+ 	//
  	public function getAnnouncement()
  	{
- 		return(string) $this->announcement;
+ 		return $this->announcement;
  	}
  	public function setAnnouncement(string $announcement)
  	{
- 			$this->announcement = $announcement;
+ 		$this->announcement = $announcement;
  	}
-
- 	public function getText(){
- 		return(string) $this->text;
- 	}
- 	public function setText(string $text){
- 			$this->text = $text;
- 	}
-
- 	//single author
- 	public function getAuth()
+ 	//
+ 	public function getText()
  	{
- 		return(int) $this->authId;
+ 		return $this->text;
  	}
- 	public function setAuth(int $authId) {
- 			$this->authId = $authId;
+ 	public function setText(string $text)
+ 	{
+ 		$this->text = $text;		//"$this->text не объявлен"(c) - что именно не объявлено?
  	}
-
- 	//categories
+	//эта переменная (catName) тут нужна, чтобы было что добавлять в массив категорий данной новости
+	public function getCatName ()
+	{
+		return $this->catName;
+	}
+	public function setCatName(string $catName)
+	{
+		$this->catName = $catName;
+	}
+	//
 	public function getCat()
 	{
-		return(array) $catIdArr;
+		return $catArr;
 	}
-	public function addToCat(int $catId){
-		$this->catIdArr[] = $catId;
+	public function setCat(string $catName)
+	{
+		$this->catArr[] = $catName;
 	}
 }
-//										category
+
  class Category {
- 	public $catId;
  	public $catName;
- 	public $catInc = array();
- 	public function __construct($catId, $catName, $catInc)
+ 	public $catInc = [];
+ 	public function __construct($catName = "", $catInc = "")
  	{
- 		setCatId($catId);
+ 		if(!empty($catName)&&!empty($catInc))
+ 		{
+ 			$this->catName = $catName;
+ 			$this->catInc[] = $catInc;
+ 		}
  		setCatName($catName);
- 		setCatId($catInc = null);
+ 		setCatId($catInc);
  	}
-
- 	public function getCatId(){
- 		return(int) $this->catId;
- 	}
- 	public function setCatId(int $catId){
- 			$this->catId = $catId;
- 	}
-
- 	public function getCatName()
+ 	//
+ 	public function getName()
  	{
- 		return(string) $this->catName;
+ 		return $this->catName;
  	}
- 	public function setCatName(string $catName)
+ 	public function setName(string $catName)
  	{
  		$this->catName = $catName;
  	}
-
- 	//given category includes categories, who's ID's are in array 
- 	public function getCatInc()
+ 	//given category includes categories, who's names are in array 
+ 	public function getInc()
  	{
- 		return(array) $catInc;
+ 		return $catInc;
  	}
- 	public function setCatInc(int $catId)
+ 	public function setInc($catName)
  	{
- 		$this->catInc[] = $catId;
+ 		$this->catInc[] = $catName;
  	}
  }

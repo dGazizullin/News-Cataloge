@@ -76,18 +76,16 @@ class News
 	public $header;
 	public $announcement;
 	public $text;
-	public $catArr = [];
-	public $catName;
+	public $catId = [];
 
-	public function __construct($header = "", $announcement = "", $text = "", $catArr = "")
+	public function __construct($header = "", $announcement = "", $text = "", $catId = "")
 	{
-		if(!empty($header) && !empty($announcement) && !empty($text) && !empty($catArr))
+		if(!empty($header) && !empty($announcement) && !empty($text) && !empty($catId))
 		{
 			$this->setHeader($header);
 			$this->setAnnouncement($announcement);
 			$this->setText($text);
-			$this->setCatName($catName);
-			$this->setCat($catArr);
+			$this->setCat($catId);
 		}
 	}
 
@@ -121,32 +119,21 @@ class News
 		$this->text = $text;
 	}
 
-	//переменная $catName тут нужна, чтобы было что добавлять в массив категорий данной новости
-
-	public function getCatName ()
-	{
-		return $this->catName;
-	}
-
-	public function setCatName(string $catName)
-	{
-		$this->catName = $catName;
-	}
-
 	public function getCat()
 	{
-		return $catArr;
+		return $catId;
 	}
 
-	public function setCat(string $catName)
+	public function setCat(int $catId)
 	{
-		$this->catArr[] = $catName;
+		$this->catId = $catId;
 	}
 }
 
 class Category 
 {
 	public $catName;
+	public $catId;
 	public $catInc = [];
 
 	public function __construct($catName = "", $catInc = "")
@@ -168,6 +155,16 @@ class Category
 		$this->catName = $catName;
 	}
 
+	public function getId()
+	{
+		return $this->$catId;
+	}
+
+	public function setId(int $catId)
+	{
+		$this->$catId;
+	}
+
 	//имена catName хранятся в массиве catInc
 
 	public function getInc()
@@ -175,8 +172,8 @@ class Category
 		return $catInc; 
 	}
 
-	public function setInc(string $catName)
+	public function setInc(int $catId)
 	{
-		$this->catInc[] = $catName;
+		$this->catInc[] = $catId;
 	}
 }

@@ -76,16 +76,16 @@ class News
 	public $header;
 	public $announcement;
 	public $text;
-	public $catId = [];
+	public $catIds = [];
 
-	public function __construct($header = "", $announcement = "", $text = "", $catId = "")
+	public function __construct($header = "", $announcement = "", $text = "", $catIds = "")
 	{
-		if(!empty($header) && !empty($announcement) && !empty($text) && !empty($catId))
+		if(!empty($header) && !empty($announcement) && !empty($text) && !empty($catIds))
 		{
 			$this->setHeader($header);
 			$this->setAnnouncement($announcement);
 			$this->setText($text);
-			$this->setCat($catId);
+			$this->setCat($catIds);
 		}
 	}
 
@@ -121,12 +121,21 @@ class News
 
 	public function getCat()
 	{
-		return $catId;
+		return $catIds;
 	}
 
-	public function setCat(int $catId)
+	public function setCat($catIds)
 	{
-		$this->catId = $catId;
+		if(is_array($catIds))
+		{
+			$this->catIds = $catIds;
+		}else if(intval($catIds) > 0)
+		{
+			$this->catIds = $catIds;
+		}else
+		{
+			throw new Exception($this->catIds . ' is wrong ID. ');
+		}
 	}
 }
 

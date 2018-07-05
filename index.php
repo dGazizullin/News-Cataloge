@@ -7,7 +7,7 @@
 //test2
 
 //										author
- class author
+ class Author
  {
 	public $authId;
 	public $lastName;
@@ -16,107 +16,73 @@
 	public $avatarPath;
 	public $sign;
 
-	public function __construct($lastName, $firstName, $patronimic, $av, $sign) 
+	public function __construct($authId, $lastName = null, $firstName, $patronimic, $avatarPath, $sign) 
  	{
- 		$this->authId = $authId;
- 		$this->lastName = $lastname;
- 		$this->firstname = $firstname;
- 		$this->patronimic = $patronimic;
- 		$this->avatarPath = $avatarPath;
- 		$this->sign = $sign;
+ 		//зануляем свойства, необязательные к присвоению новому экземпляру (делать это здесь или в параметрах, принимаемых констрактом?)
+ 		setAuthId($authId);
+ 		setFirstName($firstname);
+ 		setLastName($lastname = null);
+ 		setPatronimic($patronimic = null);
+ 		setAvPath($avatarPath = null);
+ 		setSign($sign = null);
  	}
 
-	public static function getAuthID()
+	public function getAuthId()
 	{
-		return self::$authId;
+		return(int) $this->$authId;
 	}
 
-	public function setAuthID($authId)
+	public function setAuthId(int $authId)
 	{
-		if(is_integer($this->authId))
-		{
 		$this->authId = $authId;
-		}else
-		{
-		echo $authId . " isn't integer.";
-		}
 	}
 
 	public function getLastName() 
 	{
-		return $this->lastName;
+		return(string) $this->lastName;
 	}
-	public function setLastName($lastName) {
-		if(is_string($lastName)){
-			$this->lastName = $lastName;
-		}else {
-			echo $lastName . " isn't string.";
-		}
+	public function setLastName(string $lastName) {
+		$this->lastName = $lastName;
 	}
 
  	public function getFirstName() 
  	{
-		return $this->firstName;
+		return(string) $this->firstName;
 	}
-	public function setFirstName($firstName) 
+	public function setFirstName(string $firstName) 
 	{
-		if(is_string($firstName))
-		{
 		$this->firstName = $firstName;
-		}else 
-		{
-		echo $firstN . "isn't string";
-		}
 	}
 
  	public function getPatronimic()
  	{
- 		return $this->patronimic;
+ 		return(string) $this->patronimic;
  	}
- 	public function setPatronimic($patronimic)
+ 	public function setPatronimic(string $patronimic)
  	{
- 		if(is_string($patronimic))
- 		{
- 			$this->patronimic = $patronimic;
- 		}else 
- 		{
-			echo $patronimic . " isn't string.";
-		}
+ 		$this->patronimic = $patronimic;
 	 }
 
 	  public function getAvPath()
 	 {
-	 	return $this->avatarPath;
+	 	return(string) $this->avatarPath;
 	 }
 
-	 public function setAvPath($avatarPath)
+	 public function setAvPath(string $avatarPath)
 	 {
-	 	if(is_string($avatarPath))
-	 	{
-	 		$this->avatarPath = $avatarPath;
-	 	}else
-	 	{
-	 		echo $avatarPath . " isn't string.";
-	 	}
-	 }
-
-	public function setSign($sign)
-	 {
-	 	if(is_string($sign))
-	 	{
-	 		$this->sign = $sign;
-	 	}else
-	 	{
-	 		echo $sign . " isn't string.";
-	 	}
+	 	$this->avatarPath = $avatarPath;
 	 }
 	 public function getSign()
 	 {
-	 	return $this->sign;
+	 	return(string) $this->sign;
+	 }
+	 	public function setSign(string $sign)
+	 {
+	 	$this->sign = $sign;
 	 }
  }
 
- class news {
+ class News {
  	public $newsId;
  	public $header;
  	public $announcement;
@@ -125,154 +91,98 @@
 	public $catIdArr = array();
 	public function __construct($newsId, $header, $announcement, $text, $authorId, $catIdArr)
  	{
- 		$this->newsId = $newsId;
- 		$this->header = $header;
- 		$this->announcement = $announcement;
- 		$this->text = $text;
- 		$this->authId = $authId;
- 		$this->catIdArr = $catIdArr;
+ 		setNewsID($newsId);
+ 		setHeader($header);
+ 		setAnnouncement($announcement = null);
+ 		setText($text);
+ 		setAuth($authId);
+ 		setCatInc($catInc = null);
  	}
 
  	public function getNewsID()
  	{
- 		return $this->newsId;
+ 		return(int) $this->newsId;
  	}
- 	public function setNewsID($setNewsID){
- 		if(is_integer($newsId))
- 		{
+ 	public function setNewsID(int $setNewsID){
  			$this->id = $newsId;
- 		}else 
- 		{
- 			echo $newsId . " isn't integer";
- 		}
  	}
 
  	public function getHeader(){
- 		return $this->header;
+ 		return(string) $this->header;
  	}
- 	public function setHeader($header){
- 		if(is_string($header))
- 		{
+ 	public function setHeader(string $header){
  			$this->header = $header;
- 		}else
- 		{
- 			echo $header . " ins't string";
- 		}
  	}
 
  	public function getAnnouncement()
  	{
- 		return $this->announcement;
+ 		return(string) $this->announcement;
  	}
- 	public function setAnnouncement($announcement)
+ 	public function setAnnouncement(string $announcement)
  	{
- 		if(is_string($announcement))
- 		{
  			$this->announcement = $announcement;
- 		}else 
- 		{
- 			echo $announcement . " isn't string.";
- 		}
  	}
 
  	public function getText(){
- 		return $this->text;
+ 		return(string) $this->text;
  	}
- 	public function setText($text){
- 		if(is_string($text))
- 		{
+ 	public function setText(string $text){
  			$this->text = $text;
- 		}else
- 		{
- 			echo $echo . " isn't string";
- 		}
  	}
 
  	//single author
- 	//get author ID
- 	//public $authorId = author::getAuthID();		//CHECK OUT AN ERROR!!!!!!!!
  	public function getAuth()
  	{
- 		return $this->authId;
+ 		return(int) $this->authId;
  	}
- 	public function setAuth($authId) {
- 		if(is_integer($authId))
- 		{
+ 	public function setAuth(int $authId) {
  			$this->authId = $authId;
- 		}else
- 		{
- 			echo $this->authId . " isn't integer.";
- 		}
  	}
 
  	//categories
-public function getCat()
+	public function getCat()
 	{
-		return $catIdArr;
+		return(array) $catIdArr;
 	}
-	public function addToCat($catId){
-		if(is_integer($catId))
-		{
-			array_push($catIdArr, $catId);
-		}else
-		{
-			echo $catId . "isn't integer";
-		}
+	public function addToCat(int $catId){
+		$this->catIdArr[] = $catId;
 	}
 }
 //										category
- class category {
+ class Category {
  	public $catId;
  	public $catName;
  	public $catInc = array();
  	public function __construct($catId, $catName, $catInc)
  	{
- 		$this->catId = $catId;
- 		$this->catName = $catName;
- 		$this->catInc = $catInc;
+ 		setCatId($catId);
+ 		setCatName($catName);
+ 		setCatId($catInc = null);
  	}
 
  	public function getCatId(){
- 		return $this->catId;
+ 		return(int) $this->catId;
  	}
- 	public function setCatId($catId){
- 		if(is_integer($catId))
- 		{
+ 	public function setCatId(int $catId){
  			$this->catId = $catId;
- 		}else
- 		{
- 			echo $catId / " isn't integer.";
- 		}
  	}
 
  	public function getCatName()
  	{
- 		return $this->catName;
+ 		return(string) $this->catName;
  	}
- 	public function setCatName($catName)
+ 	public function setCatName(string $catName)
  	{
- 		if(is_string($catName))
- 		{
- 			$this->catName = $catName;
- 		}else
- 		{
- 			echo $catName . " isn't string.";
- 		}
+ 		$this->catName = $catName;
  	}
 
  	//given category includes categories, who's ID's are in array 
  	public function getCatInc()
  	{
- 		return $catInc;
+ 		return(array) $catInc;
  	}
- 	public function setCatInc($catId)
+ 	public function setCatInc(int $catId)
  	{
- 		if(is_integer($catId))
- 		{
- 			array_push($catInc, $catId);
- 		}else
- 		{
- 			echo $catId . " isn't integer";
- 		}	
+ 		$this->catInc[] = $catId;
  	}
  }

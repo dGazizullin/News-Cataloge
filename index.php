@@ -128,10 +128,11 @@ class News
 	{
 		if(is_array($catIds))
 		{
-			$this->catIds = $catIds;
+			$this->catIds += $catIds;
+		}
 		}else if(intval($catIds) > 0)
 		{
-			$this->catIds = $catIds;
+			$this->catIds[] = $catIds;
 		}else
 		{
 			throw new Exception($this->catIds . ' is wrong ID. ');

@@ -7,7 +7,6 @@ class Author
 	public $patronimic;
 	public $avatarPath;
 	public $sign;
-
 	public function __construct($lastName = "", $firstName = "", $patronimic = "", $avatarPath = "", $sign = "") 
 	{
 		if(!empty($lastName) && !empty($firstName) && !empty($patronimic) && !empty($avatarPath) && !empty($sign))
@@ -71,24 +70,27 @@ class Author
 	}
 	
 	//num - максимальное получаемое число авторов
-	public function getList($num)
+	public function getList($limit = 2)
 	{
-	$conn = msqli_connect("5.188.41.42", "bitrix", "bitrix")
-	or die("NO CONNECTION: " . mysqli_error());
-	mysqli_select_db("news", $conn);
-	$sql = "SELECT * FROM authors WHERE ID < ($num + 1)";
-	$sql = (string) $sql;
-	$result = mysqli_query($sql, $conn)
-	or die ("ERROR! ".mysql_error());
-	while ($row = mysqli_fetch_assoc($result))
-	{
-		$firstName = $row["firstName"];
-		$lastName = $row["lastName"];
-		$patronimic = $row["patronimic"];
-		$avatarPath = $row["avatarPath"];
-		$sign = row["sign"];
-		echo $firstName . ' ' . $lastName . ' ' . $patronimic . ' ' .  $avatarPath . ' ' .  $sign . "<br>";
-	}	
-	mysqli_close($conn);
+		if(!empty($limit))
+		{
+			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
+			if (!$conn)
+			{
+				die('Ошибка соединения: ' . mysqli_connect_errno());
+			}
+			$sql = "SELECT * FROM authors LIMIT $limit";
+			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
+			while ($row = mysqli_fetch_assoc($result))
+			{
+				$authors[] =  new Author($row['LASTNAME'], $row['FIRSTNAME'], $row['PATRONIMIC'], $row['AVATAR'], row['SIGN']);
+			}
+			mysqli_close($conn);
+			return $authors;
+		}
+		
 	}
 }
+
+
+

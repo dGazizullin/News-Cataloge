@@ -70,33 +70,25 @@ class Author
 		$this->sign = $sign;
 	}
 	
-	public function getList()
+	//num - максимальное получаемое число авторов
+	public function getList($num)
 	{
-		$list = [];
-		if(!empty($lastName))
-		{
-			$list[] = $this->lastName;
-		}
-		$list = [];
-		if(!empty($firstName))
-		{
-			$list[] = $this->firstName;
-		}
-		$list = [];
-		if(!empty($patronimic))
-		{
-			$list[] = $this->patronimic;
-		}
-		$list = [];
-		if(!empty($avatarPath))
-		{
-			$list[] = $this->avatarPath;
-		}
-		$list = [];
-		if(!empty($sign))
-		{
-			$list[] = $this->sign;
-		}
-		return $list;
+	$conn = msqli_connect("5.188.41.42", "bitrix", "bitrix")
+	or die("NO CONNECTION: " . mysqli_error());
+	mysqli_select_db("news", $conn);
+	$sql = "SELECT * FROM authors WHERE ID < ($num + 1)";
+	$sql = (string) $sql;
+	$result = mysqli_query($sql, $conn)
+	or die ("ERROR! ".mysql_error());
+	while ($row = mysqli_fetch_assoc($result))
+	{
+		$firstName = $row["firstName"];
+		$lastName = $row["lastName"];
+		$patronimic = $row["patronimic"];
+		$avatarPath = $row["avatarPath"];
+		$sign = row["sign"];
+		echo $firstName . ' ' . $lastName . ' ' . $patronimic . ' ' .  $avatarPath . ' ' .  $sign . "<br>";
+	}	
+	mysqli_close($conn);
 	}
 }

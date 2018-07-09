@@ -2,22 +2,34 @@
 
 class News
 {
+	PUBLIC $newsID;
 	public $header;
 	public $announcement;
 	public $text;
 	public $catArr = [];
 	public $catName;
 
-	public function __construct($header = "", $announcement = "", $text = "", $catArr = "")
+	public function __construct($newsID = NULL, $header = "", $announcement = "", $text = "", $catArr = "")
 	{
-		if(!empty($header) && !empty($announcement) && !empty($text) && !empty($catArr))
+		if(!empty($newsID) && !empty($header) && !empty($announcement) && !empty($text) && !empty($catArr))
 		{
+			$this->setID($newsID);
 			$this->setHeader($header);
 			$this->setAnnouncement($announcement);
 			$this->setText($text);
 			$this->setCatName($catName);
 			$this->setCat($catArr);
 		}
+	}
+
+	public function getID()
+	{
+		return $this->newsID;
+	}
+
+	public function setID(int $newsID)
+	{
+		$this->newsID = $newsID;
 	}
 
 	public function getHeader()
@@ -83,7 +95,7 @@ class News
 			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
 			while ($row = mysqli_fetch_assoc($result))
 			{
-				$news[] = new News($row['ID'], $row['ANNOUNCEMENT'], row['NEWS_TEXT']);
+				$news[] = new News($row['ID'], "", $row['ANNOUNCEMENT'], row['NEWS_TEXT'], '', NULL);
 			}
 			mysqli_close($conn);
 			return $news;

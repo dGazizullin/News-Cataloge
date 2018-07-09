@@ -2,16 +2,28 @@
 
 class Category 
 {
+	public $CatID;
 	public $catName;
 	public $catInc = [];
 
 	public function __construct($catName = "", $catInc = "")
 	{
-		if(!empty($catName) && !empty($catInc))
+		if(!empty($catID) && !empty($catName) && !empty($catInc))
 		{
+			$this->setID($catID);
 			$this->setName($catName);
 			$this->setInc($catInc);
 		}
+	}
+
+	public function getId()
+	{
+		return $this->CatID;
+	}
+
+	public function setId(int $catID)
+	{
+		$this->CatID = $catID;
 	}
 
 	public function getName()
@@ -48,7 +60,7 @@ class Category
 			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
 			while ($row = mysqli_fetch_assoc($result))
 			{
-				$categories[] = new Category($row['ID'], $row['CATEGORY_NAME']);
+				$categories[] = new Category($row['ID'], $row['CATEGORY_NAME'], $catInc = NULL);
 			}
 			mysqli_close($conn);
 			return $categories;

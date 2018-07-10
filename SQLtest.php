@@ -3,6 +3,9 @@ include "Author.php";
 include "Category.php";
 include "News.php";
 
+ini_set('display_errors','On');
+error_reporting(E_ALL|E_STRICT);
+
 
 $author = new author(
 	// $lastName,
@@ -12,9 +15,9 @@ $author = new author(
 	// $sign
 );
 
-// $header = "Заголовок";
-// $announcement = "Анонс";
-// $text = "Текст новости";
+// $header = "Г‡Г ГЈГ®Г«Г®ГўГ®ГЄ";
+// $announcement = "ГЂГ­Г®Г­Г±";
+// $text = "Г’ГҐГЄГ±ГІ Г­Г®ГўГ®Г±ГІГЁ";
 // $category = 4;
 
 $news = new news(
@@ -33,8 +36,9 @@ $category = new category(
 );
 
 echo "<pre>";
-// print_r(get_class_methods($author));
+//print_r(get_class_methods($author));
 print_r($author->getList(3));
 print_r($category->getList(3));
 print_r($news->getList(3));
+
 echo "</pre>";

@@ -2,11 +2,11 @@
 
 class Category 
 {
-	public $CatID;
+	public $catID;
 	public $catName;
 	public $catInc = [];
 
-	public function __construct($catName = "", $catInc = "")
+	public function __construct($catID = NULL, $catName = "", $catInc = "")
 	{
 		if(!empty($catID) && !empty($catName) && !empty($catInc))
 		{
@@ -18,12 +18,12 @@ class Category
 
 	public function getId()
 	{
-		return $this->CatID;
+		return $this->catID;
 	}
 
 	public function setId(int $catID)
 	{
-		$this->CatID = $catID;
+		$this->catID = $catID;
 	}
 
 	public function getName()
@@ -36,16 +36,24 @@ class Category
 		$this->catName = $catName;
 	}
 
-	//èìåíà catName õðàíÿòñÿ â ìàññèâå catInc
-
 	public function getInc()
 	{
 		return $catInc; 
 	}
 
-	public function setInc(string $catName)
+	public function setInc($catInc)
 	{
-		$this->catInc[] = $catName;
+		if(is_array($catInc))
+		{
+			$this->catInc += $catInc;
+		}else if(intval($catInc > 0))
+		{
+			$this->catInc[] = $catInc;
+		}else
+		{
+			throw new Exception($this->catInc . ' includes wrong data. ');
+		}
+		//$this->catInc[] = $catArr;
 	}
 	public function getList($limit = 2)
 	{
@@ -60,11 +68,10 @@ class Category
 			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
 			while ($row = mysqli_fetch_assoc($result))
 			{
-				$categories[] = new Category($row['ID'], $row['CATEGORY_NAME'], $catInc = NULL);
+				$categories[] = new Category($row['ID'], $row['CATEGORY_NAME'], $catInc = [NULL]);
 			}
 			mysqli_close($conn);
 			return $categories;
 		}
-		
 	}
 }

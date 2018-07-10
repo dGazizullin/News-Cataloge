@@ -75,6 +75,7 @@ class Author
 		if(!empty($limit))
 		{
 			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
+			mysqli_set_charset($conn, "utf8");
 			if (!$conn)
 			{
 				die('Ошибка соединения: ' . mysqli_connect_errno());
@@ -83,7 +84,7 @@ class Author
 			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
 			while ($row = mysqli_fetch_assoc($result))
 			{
-				$authors[] =  new Author($row['LASTNAME'], $row['FIRSTNAME'], $row['PATRONIMIC'], $row['AVATAR'], row['SIGN']);
+				$authors[] =  new Author($row['LASTNAME'], $row['FIRSTNAME'], $row['PATRONIMIC'], $row['AVATAR'], $row['SIGN']);
 			}
 			mysqli_close($conn);
 			return $authors;

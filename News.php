@@ -2,23 +2,21 @@
 
 class News
 {
-	PUBLIC $newsID;
+	public $newsID;
 	public $header;
 	public $announcement;
 	public $text;
-	public $catArr = [];
-	public $catName;
+	public $catIds = [];
 
-	public function __construct($newsID = NULL, $header = "", $announcement = "", $text = "", $catArr = "")
+	public function __construct($newsID = NULL, $header = "", $announcement = "", $text = "", $catIds = "")
 	{
-		if(!empty($newsID) && !empty($header) && !empty($announcement) && !empty($text) && !empty($catArr))
+		if(!empty($newsID) && !empty($header) && !empty($announcement) && !empty($text) && !empty($catIds))
 		{
 			$this->setID($newsID);
 			$this->setHeader($header);
 			$this->setAnnouncement($announcement);
 			$this->setText($text);
-			$this->setCatName($catName);
-			$this->setCat($catArr);
+			$this->setCat($catIds);
 		}
 	}
 
@@ -62,26 +60,25 @@ class News
 		$this->text = $text;
 	}
 
-
-	public function getCatName ()
-	{
-		return $this->catName;
-	}
-
-	public function setCatName(string $catName)
-	{
-		$this->catName = $catName;
-	}
-
 	public function getCat()
 	{
-		return $catArr;
+		return $catIds;
 	}
 
-	public function setCat(string $catName)
+	public function setCat($catIds)
 	{
-		$this->catArr[] = $catName;
+		if(is_array($catIds))
+		{
+			$this->catIds += $catIds;
+		}else if(intval($catIds) > 0)
+		{
+			$this->catIds[] = $catIds;
+		}else
+		{
+			throw new Exception($this->catIds . ' is wrong ID. ');
+		}
 	}
+
 	public function getList($limit = 2)
 	{
 		if(!empty($limit))
@@ -95,11 +92,29 @@ class News
 			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
 			while ($row = mysqli_fetch_assoc($result))
 			{
-				$news[] = new News($row['ID'], "", $row['ANNOUNCEMENT'], row['NEWS_TEXT'], '', NULL);
+				$news[] = new News($row['ID'], $row['HEADER'], $row['ANNOUNCEMENT'], $row['NEWS_TEXT'], $catIds = [NULL]);
 			}
 			mysqli_close($conn);
 			return $news;
 		}
-		
+	}
+	public function getByID($ID = 1)
+	{
+		if(!empty($ID))
+		{
+			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
+			if (!$conn)
+			{
+				die('Ошибка соединения: ' . mysqli_connect_errno());
+			}
+			$sql = "SELECT * FROM news WHERE ID = '$ID'";
+			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
+			while ($row = mysqli_fetch_assoc($result))
+			{
+				$news = new News($row['ID'], $row['HEADER'], $row['ANNOUNCEMENT'], $row['NEWS_TEXT'], $catIds = [NULL]);
+			}
+			mysqli_close($conn);
+			return $news;
+		}
 	}
 }

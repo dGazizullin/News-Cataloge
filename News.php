@@ -2,17 +2,17 @@
 
 class News
 {
-	public $newsID;
+	public $ID;
 	public $header;
 	public $announcement;
 	public $text;
 	public $catIds = [];
 
-	public function __construct($newsID = NULL, $header = "", $announcement = "", $text = "", $catIds = "")
+	public function __construct($ID = NULL, $header = "", $announcement = "", $text = "", $catIds = "")
 	{
-		if(!empty($newsID) && !empty($header) && !empty($announcement) && !empty($text) && !empty($catIds))
+		if(!empty($ID) && !empty($header) && !empty($announcement) && !empty($text) && !empty($catIds))
 		{
-			$this->setID($newsID);
+			$this->setID($ID);
 			$this->setHeader($header);
 			$this->setAnnouncement($announcement);
 			$this->setText($text);
@@ -22,12 +22,12 @@ class News
 
 	public function getID()
 	{
-		return $this->newsID;
+		return $this->ID;
 	}
 
-	public function setID(int $newsID)
+	public function setID(int $ID)
 	{
-		$this->newsID = $newsID;
+		$this->ID = $ID;
 	}
 
 	public function getHeader()
@@ -75,7 +75,7 @@ class News
 			$this->catIds[] = $catIds;
 		}else
 		{
-			throw new Exception($this->catIds . ' is wrong ID. ');
+			throw new Exception($this->catIds . ' includes wrong ID. ');
 		}
 	}
 
@@ -98,7 +98,7 @@ class News
 			return $news;
 		}
 	}
-	public function getByID($ID = 1)
+	public function getByID($ID = 0)
 	{
 		if(!empty($ID))
 		{
@@ -108,13 +108,21 @@ class News
 				die('Ошибка соединения: ' . mysqli_connect_errno());
 			}
 			$sql = "SELECT * FROM news WHERE ID = '$ID'";
-			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
+			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error($conn));
 			while ($row = mysqli_fetch_assoc($result))
 			{
 				$news = new News($row['ID'], $row['HEADER'], $row['ANNOUNCEMENT'], $row['NEWS_TEXT'], $catIds = [NULL]);
 			}
-			mysqli_close($conn);
-			return $news;
+			if($news)
+			{
+				return $news;
+			}else
+			{
+				print_r($ID . " id wrong ID. " . "<br>");
+			}
+		}else
+		{
+			print_r($ID . " id wrong ID. " . "<br>");
 		}
 	}
 }

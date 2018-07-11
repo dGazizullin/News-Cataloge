@@ -91,6 +91,34 @@ class Author
 		}
 		
 	}
+
+	public function getByID($ID = 0)
+	{
+		if(!empty($ID))
+		{
+			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
+			if (!$conn)
+			{
+				die('Ошибка соединения: ' . mysqli_connect_errno());
+			}
+			$sql = "SELECT * FROM authors WHERE ID = '$ID'";
+			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error($conn));
+			while ($row = mysqli_fetch_assoc($result))
+			{
+				$author = new Author($row['LASTNAME'], $row['FIRSTNAME'], $row['PATRONIMIC'], $row['AVATAR'], $row['SIGN']);
+			}
+			if ($author)
+			{
+				return $author;
+			}else 
+			{
+				print_r($ID . " is wrong ID. " . "<br>");
+			}
+		}else
+		{
+			print_r($ID . " is wrong ID. " . "<br>");
+		}
+	}
 }
 
 

@@ -27,18 +27,16 @@ $news = new news(
 	//$category
 );
 
-$category = new category(
-	//$header,
-	//$announcement,
-	//$text,
-	//$catArr,
-	//$catName,
-);
+$category = new Category(3, "name", $arr = [NULL]);
 
 echo "<pre>";
 //print_r(get_class_methods($author));
+/*
 print_r($author->getList(3));
 print_r($category->getList(3));
 print_r($news->getList(3));
-
+*/
+print_r($category->getByID(2));
+print_r($news->getByID(3));
+print_r($author->getByID(3));
 echo "</pre>";

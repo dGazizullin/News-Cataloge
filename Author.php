@@ -5,17 +5,17 @@ class Author
 	public $lastName;
 	public $firstName;
 	public $patronimic;
-	public $avatarPath;
+	public $avatar;
 	public $sign;
 	private $DB;
-	public function __construct($lastName = "", $firstName = "", $patronimic = "", $avatarPath = "", $sign = "") 
+	public function __construct($lastName = "", $firstName = "", $patronimic = "", $avatar = "", $sign = "") 
 	{
-		if(!empty($lastName) && !empty($firstName) && !empty($patronimic) && !empty($avatarPath) && !empty($sign))
+		if(!empty($lastName) && !empty($firstName) && !empty($patronimic) && !empty($avatar) && !empty($sign))
 		{
 			$this->setLastName($lastName);
 			$this->setFirstName($firstName);
 			$this->setPatronimic($patronimic);
-			$this->setAv($avatarPath);
+			$this->setAv($avatar);
 			$this->setSign($sign);
 		}
 		$this->DB = new DB();
@@ -53,12 +53,12 @@ class Author
 
 	public function getAv()
 	{
-		return $this->avatarPath;
+		return $this->avatar;
 	}
 
-	public function setAv(string $avatarPath)
+	public function setAv(string $avatar)
 	{
-		$this->avatarPath = $avatarPath;
+		$this->avatar = $avatar;
 	}
 
 	public function getSign()
@@ -95,6 +95,39 @@ class Author
 			{
 				return new self($res['LASTNAME'], $res['FIRSTNAME'], $res['PATRONIMIC'], $res['AVATAR'], $res['SIGN']);
 			}
+		}
+		return false;
+	}
+
+	public function add(int $id, string $firstName, string $lastName, string $patronimic, string $avatar, string $sign)
+	{
+		$query = "INSERT INTO authors VALUES ('$id', '$firstName', '$lastName', '$patronimic', '$avatar', '$sign');";
+		$add = $this->DB->query("$query");
+		if($add)
+		{
+			return "Author (ID = $id) added successfully.";
+		}
+		return false;			
+	}
+
+	public function delete(int $id)
+	{
+		$query = "DELETE FROM authors WHERE ID = '$id'";
+		$delete = $this->DB->query("$query");
+		if($delete)
+		{
+			return "Author (ID = $id) deleted successfully.";
+		}
+		return false;			
+	}
+
+	public function edit(int $id, string $firstName, string $lastName, string $patronimic, string $avatar, string $sign)
+	{
+		$query = "UPDATE authors SET FIRSTNAME = '$firstName', LASTNAME = '$lastName', PATRONIMIC = '$patronimic', AVATAR = '$avatar', SIGN = '$sign' WHERE ID = '$id';";
+		$edit = $this->DB->query("$query");
+		if($edit)
+		{
+			return "Author (ID = $id) edited successfully.";
 		}
 		return false;
 	}

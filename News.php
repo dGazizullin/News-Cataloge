@@ -1,5 +1,5 @@
 <?php
-include_once "DB.php";
+include_once 'DB.php';
 class News
 {
 	public $ID;
@@ -9,7 +9,7 @@ class News
 	public $catIds = [];
 	private $DB;
 
-	public function __construct($ID = NULL, $header = "", $announcement = "", $text = "", $catIds = "")
+	public function __construct($ID = NULL, $header = '', $announcement = '', $text = '', $catIds = '')
 	{
 		if(!empty($ID) && !empty($header) && !empty($announcement) && !empty($text) && !empty($catIds))
 		{
@@ -86,7 +86,7 @@ class News
 		if(intval($limit) > 0)
 		{
 			$list = [];
-			$arRes = $this->DB->query("SELECT * FROM news LIMIT $limit");
+			$arRes = $this->DB->query('SELECT * FROM news LIMIT $limit');
 			foreach ($arRes as $res)
 			{
 				$list[] = new self($row['ID'], $row['HEADER'], $row['ANNOUNCEMENT'], $row['NEWS_TEXT'], $catIds = [NULL]);
@@ -108,5 +108,37 @@ class News
 		}
 		return false;
 	}
-	
+
+	public function add(int $id, string $announcement, string $text, string $header)
+	{
+		$query = "INSERT INTO news VALUES ('$id', '$announcement', '$text', '$header');";
+		$add = $this->DB->query("$query");
+		if($add)
+		{
+			return "News (ID = $id) added successfully.";
+		}
+		return false;			
+	}
+
+	public function delete(int $id = 0)
+	{
+		$query = "DELETE FROM news WHERE ID = '$id'";
+		$delete = $this->DB->query("$query");
+		if($delete)
+		{
+			return "News (ID = $id) deleted successfully.";
+		}
+		return false;			
+	}
+
+	public function edit(int $id, string $announcement, string $text, string $header)
+	{
+		$query = "UPDATE news SET ANNOUNCEMENT = '$announcement', NEWS_TEXT = '$text', HEADER = '$header' WHERE ID = '$id';";
+		$edit = $this->DB->query("$query");
+		if($edit)
+		{
+			return "News (ID = $id) edited successfully.";
+		}
+		return false;
+	}
 }

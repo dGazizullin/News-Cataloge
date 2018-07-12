@@ -18,7 +18,7 @@ class Category
 		$this->DB = new DB();
 	}
 
-	public function getId()
+	public function getID()
 	{
 		return $this->ID;
 	}
@@ -50,7 +50,6 @@ class Category
 		{
 			throw new Exception($this->parents . ' includes wrong ID. ');
 		}
-		//$this->parents[] = $catArr;
 	}
 
 	
@@ -95,5 +94,38 @@ class Category
 		}
 
 		return $result;
+	}
+
+	public function add(int $id,string $name)
+	{
+		$query = "INSERT INTO categories VALUES ('$id', '$name');";
+		$add = $this->DB->query("$query");
+		if($add)
+		{
+			return "Category (ID = $id) added successfully.";
+		}
+		return false;			
+	}
+
+	public function delete(int $id)
+	{
+		$query = "DELETE FROM categories WHERE ID = '$id'";
+		$delete = $this->DB->query("$query");
+		if($delete)
+		{
+			return "Category (ID = $id) deleted successfully.";
+		}
+		return false;			
+	}
+
+	public function edit(int $id, string $name)
+	{
+		$query = "UPDATE categories SET CATEGORY_NAME = '$name' WHERE ID = '$id';";
+		$edit = $this->DB->query("$query");
+		if($edit)
+		{
+			return "Category (ID = $id) edited successfully.";
+		}
+		return false;
 	}
 }

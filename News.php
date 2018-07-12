@@ -1,5 +1,5 @@
 <?php
-
+include_once "DB.php";
 class News
 {
 	public $ID;
@@ -7,6 +7,7 @@ class News
 	public $announcement;
 	public $text;
 	public $catIds = [];
+	private $DB;
 
 	public function __construct($ID = NULL, $header = "", $announcement = "", $text = "", $catIds = "")
 	{
@@ -18,6 +19,7 @@ class News
 			$this->setText($text);
 			$this->setCat($catIds);
 		}
+		$this->DB = new DB();
 	}
 
 	public function getID()
@@ -81,48 +83,30 @@ class News
 
 	public function getList($limit = 2)
 	{
-		if(!empty($limit))
+		if(intval($limit) > 0)
 		{
-			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
-			if (!$conn)
+			$list = [];
+			$arRes = $this->DB->query("SELECT * FROM news LIMIT $limit");
+			foreach ($arRes as $res)
 			{
-				die('Ошибка соединения: ' . mysqli_connect_errno());
+				$list[] = new self($row['ID'], $row['HEADER'], $row['ANNOUNCEMENT'], $row['NEWS_TEXT'], $catIds = [NULL]);
 			}
-			$sql = "SELECT * FROM news LIMIT $limit";
-			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
-			while ($row = mysqli_fetch_assoc($result))
-			{
-				$news[] = new News($row['ID'], $row['HEADER'], $row['ANNOUNCEMENT'], $row['NEWS_TEXT'], $catIds = [NULL]);
-			}
-			mysqli_close($conn);
-			return $news;
+			return $list;
 		}
+		return false;
 	}
+
 	public function getByID($ID = 0)
 	{
-		if(!empty($ID))
+		if($ID > 0)
 		{
-			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
-			if (!$conn)
+			$arRes = $this->DB->query("SELECT * FROM news WHERE ID = '$ID'");
+			foreach ($arRes as $res)
 			{
-				die('Ошибка соединения: ' . mysqli_connect_errno());
+				return new self($res['ID'], $res['HEADER'], $res['ANNOUNCEMENT'], $res['NEWS_TEXT'], $catIds = [1]);
 			}
-			$sql = "SELECT * FROM news WHERE ID = '$ID'";
-			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error($conn));
-			while ($row = mysqli_fetch_assoc($result))
-			{
-				$news = new News($row['ID'], $row['HEADER'], $row['ANNOUNCEMENT'], $row['NEWS_TEXT'], $catIds = [NULL]);
-			}
-			if($news)
-			{
-				return $news;
-			}else
-			{
-				print_r($ID . " id wrong ID. " . "<br>");
-			}
-		}else
-		{
-			print_r($ID . " id wrong ID. " . "<br>");
 		}
+		return false;
 	}
+	
 }

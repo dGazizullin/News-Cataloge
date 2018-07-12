@@ -1,19 +1,21 @@
 <?php
-
+include_once "DB.php";
 class Category 
 {
 	public $ID;
-	public $catName;
-	public $catInc = [];
+	public $name;
+	public $parents = [];
+	private $DB;
 
-	public function __construct($ID = NULL, $catName = "", $catInc = "")
+	public function __construct($ID = NULL, $name = "", $parents = "")
 	{
-		if(!empty($ID) && !empty($catName) && !empty($catInc))
+		if(!empty($ID) && !empty($name) && !empty($parents))
 		{
 			$this->setID($ID);
-			$this->setName($catName);
-			$this->setInc($catInc);
+			$this->setName($name);
+			$this->setParents($parents);
 		}
+		$this->DB = new DB();
 	}
 
 	public function getId()
@@ -28,77 +30,70 @@ class Category
 
 	public function getName()
 	{
-		return $this->catName;
+		return $this->name;
 	}
 
-	public function setName(string $catName)
+	public function setName(string $name)
 	{
-		$this->catName = $catName;
+		$this->name = $name;
 	}
 
-	public function getInc()
+	public function setParents($parents)
 	{
-		return $catInc; 
-	}
-
-	public function setInc($catInc)
-	{
-		if(is_array($catInc))
+		if(is_array($parents))
 		{
-			$this->catInc += $catInc;
-		}else if(intval($catInc > 0))
+			$this->parents += $parents;
+		}else if(intval($parents > 0))
 		{
-			$this->catInc[] = $catInc;
+			$this->parents[] = $parents;
 		}else
 		{
-			throw new Exception($this->catInc . ' includes wrong ID. ');
+			throw new Exception($this->parents . ' includes wrong ID. ');
 		}
-		//$this->catInc[] = $catArr;
+		//$this->parents[] = $catArr;
 	}
-	public function getList($limit = 2)
+
+	
+	public function getList($limit = 3)
 	{
-		if(!empty($limit))
+		if(intval($limit) > 0)
 		{
-			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
-			if (!$conn)
+			$list = [];
+			$arRes = $this->DB->query("SELECT * FROM categories LIMIT $limit");
+			foreach ($arRes as $res)
 			{
-				die('Ошибка соединения: ' . mysqli_connect_errno());
+				$list[] = new self($res['ID'], $res['CATEGORY_NAME'], $this->getParents($res["ID"]));
 			}
-			$sql = "SELECT * FROM categories LIMIT $limit";
-			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
-			while ($row = mysqli_fetch_assoc($result))
-			{
-				$categories[] = new Category($row['ID'], $row['CATEGORY_NAME'], $catInc = [NULL]);
-			}
-			mysqli_close($conn);
-			return $categories;
+			return $list;
 		}
+		return false;
 	}
+	
+
 	public function getByID($ID = 0)
 	{
-		if(!empty($ID))
+		if($ID > 0)
 		{
-			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
-			if (!$conn)
+			$arRes = $this->DB->query("SELECT * FROM categories WHERE ID = '$ID'");
+			foreach($arRes as $res)
 			{
-				die('Ошибка соединения: ' . mysqli_connect_errno());
+				return new self($res["ID"], $res["CATEGORY_NAME"], $this->getParents($res["ID"]));
 			}
-			$sql = "SELECT * FROM categories WHERE ID = '$ID'";
-			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error($conn));
-			while ($row = mysqli_fetch_assoc($result))
-			{
-				$category = new Category($row['ID'], $row['CATEGORY_NAME'], $catInc = [NULL]);
-			}
-			if ($category)
-			{
-				return $category;
-			}else 
-			{
-				print_r($ID . " is wrong ID. " . "<br>");
-			}
-		}else
-		{
-			print_r($ID . " is wrong ID. " . "<br>");
 		}
+		return false;
+	}
+
+	public function getParents($categoryID)
+	{
+		$result = [];
+		$query = "SELECT PARENT_ID FROM incl_categories WHERE CATEGORY_ID = '$categoryID'";
+		$arRes = $this->DB->query($query);
+
+		foreach($arRes as $res)
+		{
+			$result[] = $res["PARENT_ID"];
+		}
+
+		return $result;
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-
+include_once "DB.php";
 class Author
 {
 	public $lastName;
@@ -7,6 +7,7 @@ class Author
 	public $patronimic;
 	public $avatarPath;
 	public $sign;
+	private $DB;
 	public function __construct($lastName = "", $firstName = "", $patronimic = "", $avatarPath = "", $sign = "") 
 	{
 		if(!empty($lastName) && !empty($firstName) && !empty($patronimic) && !empty($avatarPath) && !empty($sign))
@@ -17,6 +18,7 @@ class Author
 			$this->setAv($avatarPath);
 			$this->setSign($sign);
 		}
+		$this->DB = new DB();
 	}
 
 	public function getLastName()
@@ -69,57 +71,31 @@ class Author
 		$this->sign = $sign;
 	}
 	
-	//num - максимальное получаемое число авторов
 	public function getList($limit = 2)
 	{
-		if(!empty($limit))
+		if(intval($limit) > 0)
 		{
-			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
-			mysqli_set_charset($conn, "utf8");
-			if (!$conn)
+			$list = [];
+			$arRes = $this->DB->query("SELECT * FROM authors LIMIT $limit");
+			foreach ($arRes as $res)
 			{
-				die('Ошибка соединения: ' . mysqli_connect_errno());
+				$list[] = new self($res['LASTNAME'], $res['FIRSTNAME'], $res['PATRONIMIC'], $res['AVATAR'], $res['SIGN']); 
 			}
-			$sql = "SELECT * FROM authors LIMIT $limit";
-			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error());
-			while ($row = mysqli_fetch_assoc($result))
-			{
-				$authors[] =  new Author($row['LASTNAME'], $row['FIRSTNAME'], $row['PATRONIMIC'], $row['AVATAR'], $row['SIGN']);
-			}
-			mysqli_close($conn);
-			return $authors;
+			return $list;
 		}
-		
+		return false;
 	}
 
 	public function getByID($ID = 0)
 	{
-		if(!empty($ID))
+		if($ID > 0)
 		{
-			$conn = mysqli_connect("localhost", "bitrix0", "bitrix", "news") or die("NO CONNECTION: " . mysqli_error());
-			if (!$conn)
+			$arRes = $this->DB->query("SELECT * FROM authors WHERE ID = '$ID'");
+			foreach ($arRes as $res)
 			{
-				die('Ошибка соединения: ' . mysqli_connect_errno());
+				return new self($res['LASTNAME'], $res['FIRSTNAME'], $res['PATRONIMIC'], $res['AVATAR'], $res['SIGN']);
 			}
-			$sql = "SELECT * FROM authors WHERE ID = '$ID'";
-			$result = mysqli_query($conn, $sql) or die ("ERROR! " . mysqli_error($conn));
-			while ($row = mysqli_fetch_assoc($result))
-			{
-				$author = new Author($row['LASTNAME'], $row['FIRSTNAME'], $row['PATRONIMIC'], $row['AVATAR'], $row['SIGN']);
-			}
-			if ($author)
-			{
-				return $author;
-			}else 
-			{
-				print_r($ID . " is wrong ID. " . "<br>");
-			}
-		}else
-		{
-			print_r($ID . " is wrong ID. " . "<br>");
 		}
+		return false;
 	}
 }
-
-
-

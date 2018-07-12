@@ -87,19 +87,17 @@ class Category
 		$result = [];
 		$query = "SELECT PARENT_ID FROM incl_categories WHERE CATEGORY_ID = '$categoryID'";
 		$arRes = $this->DB->query($query);
-
 		foreach($arRes as $res)
 		{
 			$result[] = $res["PARENT_ID"];
 		}
-
 		return $result;
 	}
 
 	public function add(int $id,string $name)
 	{
 		$query = "INSERT INTO categories VALUES ('$id', '$name');";
-		$add = $this->DB->query("$query");
+		$add = $this->DB->query($query);
 		if($add)
 		{
 			return "Category (ID = $id) added successfully.";
@@ -110,7 +108,7 @@ class Category
 	public function delete(int $id)
 	{
 		$query = "DELETE FROM categories WHERE ID = '$id'";
-		$delete = $this->DB->query("$query");
+		$delete = $this->DB->query($query);
 		if($delete)
 		{
 			return "Category (ID = $id) deleted successfully.";
@@ -121,11 +119,47 @@ class Category
 	public function edit(int $id, string $name)
 	{
 		$query = "UPDATE categories SET CATEGORY_NAME = '$name' WHERE ID = '$id';";
-		$edit = $this->DB->query("$query");
+		$edit = $this->DB->query($query);
 		if($edit)
 		{
 			return "Category (ID = $id) edited successfully.";
 		}
 		return false;
 	}
+
+	public function setParent(int $ID,int $parentID)
+	{
+		if($ID != $parentID)
+		{
+			//checking if category's ID exists
+			$query = "SELECT ID FROM categories WHERE ID = $ID";
+			$arRes = $this->DB->query($query);
+			if($arRes)
+			{
+				//checking if parent category's ID exists
+				$query = "SELECT ID FROM news WHERE ID = $parentID";
+				$arRes = $this->DB->query($query);
+				if($arRes)
+				{
+					$query = "INSERT INTO incl_categories VALUES (NULL, '$ID', '$parentID');";
+					$arRes = $this->DB->query($query);
+					return "Category $parentID includes category $ID now.";
+				}
+			}
+		}
+		return false;	
+	}
+
+	public function deleteParent(int $ID, int $parentID)
+	{
+		$query = "DELETE FROM incl_categories WHERE PARENT_ID = $parentID AND CATEGORY_ID = $ID";
+		$delete = $this->DB->query($query);
+		if($delete)
+		{
+			return "Category $parentID doesn't include category $ID now.";
+		}
+		return false;
+	}
+
+	
 }

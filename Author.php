@@ -112,9 +112,11 @@ class Author
 
 	public function delete(int $id)
 	{
-		$query = "DELETE FROM authors WHERE ID = '$id'";
-		$delete = $this->DB->query("$query");
-		if($delete)
+		$query1 = "DELETE FROM authors WHERE ID = $id";
+		$delete = $this->DB->query($query1);
+		$news = new news;
+		$deleteTrace = $news->deleteWholeAuthor($id);
+		if($delete && $deleteTrace)
 		{
 			return "Author (ID = $id) deleted successfully.";
 		}

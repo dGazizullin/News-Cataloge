@@ -5,13 +5,16 @@ error_reporting(E_ALL|E_STRICT);
 include "Category.php";
 include "Author.php";
 include "News.php";
-ini_set('display_errors','On');
-error_reporting(E_ALL|E_STRICT);
+
+
 
 $category = new Category;
 $author = new Author;
 $news = new News;
 
+print_r($setPar = $news->addAuthor(3, 2));
+print_r($smth = $author->delete(1));
+/*
 print_r($add = $category->add(4, "category"));
 echo '<br>';
 print_r($add = $author->add(4, "Fname", "Lname", "patre", "av", "sign"));
@@ -32,4 +35,4 @@ echo '<br>';
 print_r($delete = $author->delete(4));
 echo '<br>';
 print_r($delete = $news->delete(4));
-
+*/

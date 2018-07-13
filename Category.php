@@ -116,11 +116,20 @@ class Category
 
 	public function edit(int $id, string $name)
 	{
-		$category = [];
-		$category = $this->DB->query("SELECT * FROM categories WHERE ID = '$id'");
-		if($author['CATEGORY_NAME'] != $name)
+		$category = $this->DB->query("SELECT * FROM categories WHERE ID - '$id'");
+		if($category['CATEGORY_NAME'] != $name)
 		{
-			$this->DB->query("UPDATE categories SET CATEGORY_NAME = '$name' WHERE ID = '$id'");
+			$fields['CATEGORY_NAME'] = $name;
+		}
+		if(!empty($fields))
+		{
+			$sql = "UPDATE edit SET ";
+			foreach($fields as $fieldCode => $fieldVal)
+			{
+				$sql .= $fieldCode." = ".$fieldVal;
+			}
+			$sql .= "WHERE ID = '$id'";
+			$this->DB->query($sql);
 		}
 	}
 

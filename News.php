@@ -1,4 +1,4 @@
-<?php
+	<?php
 include_once 'DB.php';
 class News
 {
@@ -129,19 +129,28 @@ class News
 
 	public function edit(int $id, string $announcement, string $text, string $header)
 	{
-		$news = [];
 		$news = $this->DB->query("SELECT * FROM news WHERE ID = '$id'");
 		if($news['ANNOUNCEMENT'] != $announcement)
 		{
-			$this->DB->query("UPDATE news SET ANNOUNCEMENT = '$announcement' WHERE ID = '$id'");
+			$fields['ANNOUNCEMENT'] = $announcement;
 		}
 		if($news['NEWS_TEXT'] != $text)
 		{
-			$this->DB->query("UPDATE news SET NEWS_TEXT = '$text' WHERE ID = '$id'");
+			$fields['NEWS_TEXT'] = $text;
 		}
 		if($news['HEADER'] != $header)
 		{
-			$this->DB->query("UPDATE news SET HEADER = '$header' WHERE ID = '$id'");
+			$fields['HEADER'] = $header;
+		}
+		if(!empty($fields))
+		{
+			$sql = "UPDATE news SET ";
+			foreach($fields as $fieldCode => $fieldVal)
+			{
+				$sql .= $fieldCode." = ".$fieldVal;
+			}
+			$sql .= "WHERE ID = '$id'";
+			$this->DB->query($sql);
 		}
 	}
 

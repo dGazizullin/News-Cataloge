@@ -120,27 +120,32 @@ class Author
 
 	public function edit(int $id, string $firstName, string $lastName, string $patronimic, string $avatar, string $sign)
 	{
-		$author = [];
 		$author = $this->DB->query("SELECT * FROM author WHERE ID = '$id'");
-		if($author['FIRSTNAME'] = $firstName)
+		if($author['FIRSTNAME'] != $firstName)
 		{
-			$this->DB->query("UPDATE authors SET FIRSTNAME = '$firstName' WHERE ID = '$id'");
+			$fields['FIRSTNAME'] = $firstName;
 		}
-		if($author['LASTNAME'] = $lastName)
+		if($author['LASTNAME'] != $lastName)
 		{
-			$this->DB->query("UPDATE authors SET LASTNAME = '$lastName' WHERE ID = '$id'");
+			$fields['LASTNAME'] = $lastName;
 		}
-		if($author['PATRONIMIC'] = $patronimic)
+		if($author['PATRONIMIC'] != $patronimic)
 		{
-			$this->DB->query("UPDATE authors SET PATRONIMIC = '$patronimic' WHERE ID = '$id'");
+			$fields['PATRONIMIC'] = $patronimic;
 		}
-		if($author['AVATAR'] = $avatar)
+		if($author['AVATAR'] != $avatar)
 		{
-			$this->DB->query("UPDATE authors SET AVATAR = '$avatar' WHERE ID = '$id'");
+			$fields['SIGN'] = $sign;
 		}
-		if($author['SIGN'] = $sign)
+		if(!empty($fields))
 		{
-			$this->DB->query("UPDATE authors SET SIGN = '$sign' WHERE ID = '$id'");
+			$sql = "UPDATE authors SET ";
+			foreach($fields as $fieldCode => $fieldVal)
+			{
+				$sql .= $fieldCode." = ".$fieldVal;
+			}
+			$sql .= "WHERE ID = '$id'";
+			$this->DB->query($sql);
 		}
 	}
 }

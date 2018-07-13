@@ -53,7 +53,7 @@ class Category
 	}
 
 	
-	public function getList($limit = 3)
+	public function getList(int $limit = 3)
 	{
 		if(intval($limit) > 0)
 		{
@@ -69,7 +69,7 @@ class Category
 	}
 	
 
-	public function getByID($ID = 0)
+	public function getByID(int $ID)
 	{
 		if($ID > 0)
 		{
@@ -82,7 +82,7 @@ class Category
 		return false;
 	}
 
-	public function getParents($categoryID)
+	public function getParents(int $categoryID)
 	{
 		$result = [];
 		$query = "SELECT PARENT_ID FROM incl_categories WHERE CATEGORY_ID = '$categoryID'";
@@ -109,7 +109,11 @@ class Category
 	{
 		$query = "DELETE FROM categories WHERE ID = '$id'";
 		$delete = $this->DB->query($query);
-		if($delete)
+		$query = "DELETE FROM incl_categories WHERE CATEGORY_ID = $id OR PARENT_ID = $id";
+		$deleteParents = $this->DB->query($query);
+		$query = "DELETE FROM news_categories WHERE CATEGORY_ID = $id";
+		$deleteNews = $this->DB->query($query);
+		if($delete && $deleteParents && $deleteNews)
 		{
 			return "Category (ID = $id) deleted successfully.";
 		}
@@ -160,6 +164,4 @@ class Category
 		}
 		return false;
 	}
-
-	
 }

@@ -123,12 +123,14 @@ class News
 	public function delete(int $id = 0)
 	{
 		$query = "DELETE FROM news WHERE ID = '$id'";
+		$deleteCategories = $this->deleteCategories($id);
+		$deleteAuthors = $this->deleteWholeAuthor($id);
 		$delete = $this->DB->query("$query");
-		if($delete)
+		if($delete && $deleteCategories && $deleteAuthors)
 		{
 			return "News (ID = $id) deleted successfully.";
 		}
-		return false;			
+		return false;		
 	}
 
 	public function edit(int $id, string $announcement, string $text, string $header)
@@ -160,8 +162,8 @@ class News
 				{
 					return "News $ID belongs to category $categoryID now.";
 				}
-			}	
-		}		
+			}
+		}
 		return false;
 	}
 
@@ -176,7 +178,7 @@ class News
 		return false;
 	}
 
-	public function addAuthor($ID, $authorID)
+	public function addAuthor(int $ID, int $authorID)
 	{
 		//checking if news ID exists
 		$query = "SELECT ID FROM news WHERE ID = $ID";
@@ -198,7 +200,7 @@ class News
 		}
 	}
 
-	public function deleteAuthor($ID, $authorID)
+	public function deleteAuthor(int $ID, int $authorID)
 	{
 		$query = "DELETE FROM news_authors WHERE NEWS_ID = $ID AND AUTHOR_ID = $authorID";
 		$delete = $this->DB->query($query);
@@ -209,9 +211,22 @@ class News
 		return false;
 	}
 
-	public function deleteWholeAuthor($authorID)
+	//delete all news links by given author ID 
+	public function deleteWholeAuthor(int $authorID)
 	{
 		$query = "DELETE FROM news_authors WHERE AUTHOR_ID = $authorID";
+		$delete = $this->DB->query($query);
+		if($delete)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	//delete all categories links by given news ID
+	public function deleteCategories(int $ID)
+	{
+		$query = "DELETE FROM news_categories WHERE NEWS_ID = $ID";
 		$delete = $this->DB->query($query);
 		if($delete)
 		{

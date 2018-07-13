@@ -12,8 +12,8 @@ $category = new Category;
 $author = new Author;
 $news = new News;
 
-print_r($setPar = $news->addAuthor(3, 2));
-print_r($smth = $author->delete(1));
+print_r($setPar = $category->delete(1));
+
 /*
 print_r($add = $category->add(4, "category"));
 echo '<br>';

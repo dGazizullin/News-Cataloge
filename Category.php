@@ -94,74 +94,48 @@ class Category
 		return $result;
 	}
 
-	public function add(int $id,string $name)
+	public function add(string $name)
 	{
-		$query = "INSERT INTO categories VALUES ('$id', '$name');";
-		$add = $this->DB->query($query);
-		if($add)
-		{
-			return "Category (ID = $id) added successfully.";
-		}
-		return false;			
+		$query = "INSERT INTO categories SET CATEGORY_NAME = '$name';";
+		return $this->DB->query($query);			
 	}
 
 	public function delete(int $id)
 	{
 		$query = "DELETE FROM categories WHERE ID = '$id'";
 		$delete = $this->DB->query($query);
-		$query = "DELETE FROM incl_categories WHERE CATEGORY_ID = $id OR PARENT_ID = $id";
+		$query = "DELETE FROM incl_categories WHERE CATEGORY_ID = '$id' OR PARENT_ID = '$id'";
 		$deleteParents = $this->DB->query($query);
-		$query = "DELETE FROM news_categories WHERE CATEGORY_ID = $id";
+		$query = "DELETE FROM news_categories WHERE CATEGORY_ID = '$id'";
 		$deleteNews = $this->DB->query($query);
 		if($delete && $deleteParents && $deleteNews)
 		{
-			return "Category (ID = $id) deleted successfully.";
-		}
-		return false;			
+			return $delete;
+		}	
 	}
 
 	public function edit(int $id, string $name)
 	{
-		$query = "UPDATE categories SET CATEGORY_NAME = '$name' WHERE ID = '$id';";
-		$edit = $this->DB->query($query);
-		if($edit)
+		$category = [];
+		$category = $this->DB->query("SELECT * FROM categories WHERE ID = '$id'");
+		if($author['CATEGORY_NAME'] != $name)
 		{
-			return "Category (ID = $id) edited successfully.";
+			$this->DB->query("UPDATE categories SET CATEGORY_NAME = '$name' WHERE ID = '$id'");
 		}
-		return false;
 	}
 
-	public function setParent(int $ID,int $parentID)
+	public function setParent(int $childID,int $parentID)
 	{
-		if($ID != $parentID)
+		if($childID != $parentID)
 		{
-			//checking if category's ID exists
-			$query = "SELECT ID FROM categories WHERE ID = $ID";
-			$arRes = $this->DB->query($query);
-			if($arRes)
-			{
-				//checking if parent category's ID exists
-				$query = "SELECT ID FROM news WHERE ID = $parentID";
-				$arRes = $this->DB->query($query);
-				if($arRes)
-				{
-					$query = "INSERT INTO incl_categories VALUES (NULL, '$ID', '$parentID');";
-					$arRes = $this->DB->query($query);
-					return "Category $parentID includes category $ID now.";
-				}
-			}
+			$query = "INSERT INTO incl_categories SET CATEGORY_ID = '$childID', PARENT_ID = '$parentID'";
+			return $this->DB->query($query);
 		}
-		return false;	
 	}
 
-	public function deleteParent(int $ID, int $parentID)
+	public function deleteParent(int $childID, int $parentID)
 	{
-		$query = "DELETE FROM incl_categories WHERE PARENT_ID = $parentID AND CATEGORY_ID = $ID";
-		$delete = $this->DB->query($query);
-		if($delete)
-		{
-			return "Category $parentID doesn't include category $ID now.";
-		}
-		return false;
+		$query = "DELETE FROM incl_categories WHERE PARENT_ID = '$parentID' AND CATEGORY_ID = '$childID'";
+		return $this->DB->query($query);
 	}
 }

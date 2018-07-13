@@ -99,16 +99,12 @@ class Author
 		return false;
 	}
 
-	public function add(int $id, string $firstName, string $lastName, string $patronimic, string $avatar, string $sign)
+	public function add(string $firstName, string $lastName, string $patronimic, string $avatar, string $sign)
 	{
-		$query = "INSERT INTO authors VALUES ('$id', '$firstName', '$lastName', '$patronimic', '$avatar', '$sign');";
-		$add = $this->DB->query("$query");
-		if($add)
-		{
-			return "Author (ID = $id) added successfully.";
-		}
-		return false;			
+		$query = "INSERT INTO authors SET FIRSTNAME = '$firstName', LASTNAME = '$lastName', PATRONIMIC = '$patronimic', AVATAR = '$avatar', SIGN = '$sign'";
+		return $this->DB->query($query);
 	}
+
 
 	public function delete(int $id)
 	{
@@ -118,19 +114,33 @@ class Author
 		$deleteTrace = $news->deleteWholeAuthor($id);
 		if($delete && $deleteTrace)
 		{
-			return "Author (ID = $id) deleted successfully.";
-		}
-		return false;			
+			return $delete;
+		}		
 	}
 
 	public function edit(int $id, string $firstName, string $lastName, string $patronimic, string $avatar, string $sign)
 	{
-		$query = "UPDATE authors SET FIRSTNAME = '$firstName', LASTNAME = '$lastName', PATRONIMIC = '$patronimic', AVATAR = '$avatar', SIGN = '$sign' WHERE ID = '$id';";
-		$edit = $this->DB->query("$query");
-		if($edit)
+		$author = [];
+		$author = $this->DB->query("SELECT * FROM author WHERE ID = '$id'");
+		if($author['FIRSTNAME'] = $firstName)
 		{
-			return "Author (ID = $id) edited successfully.";
+			$this->DB->query("UPDATE authors SET FIRSTNAME = '$firstName' WHERE ID = '$id'");
 		}
-		return false;
+		if($author['LASTNAME'] = $lastName)
+		{
+			$this->DB->query("UPDATE authors SET LASTNAME = '$lastName' WHERE ID = '$id'");
+		}
+		if($author['PATRONIMIC'] = $patronimic)
+		{
+			$this->DB->query("UPDATE authors SET PATRONIMIC = '$patronimic' WHERE ID = '$id'");
+		}
+		if($author['AVATAR'] = $avatar)
+		{
+			$this->DB->query("UPDATE authors SET AVATAR = '$avatar' WHERE ID = '$id'");
+		}
+		if($author['SIGN'] = $sign)
+		{
+			$this->DB->query("UPDATE authors SET SIGN = '$sign' WHERE ID = '$id'");
+		}
 	}
 }

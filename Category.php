@@ -123,12 +123,13 @@ class Category
 		}
 		if(!empty($fields))
 		{
-			$sql = "UPDATE edit SET ";
+			$sql = "UPDATE categories SET ";
 			foreach($fields as $fieldCode => $fieldVal)
 			{
-				$sql .= $fieldCode." = ".$fieldVal;
+				$sql .= $fieldCode . " = " . "'" . $fieldVal . "'";
 			}
-			$sql .= "WHERE ID = '$id'";
+			$sql .= " WHERE ID = '$id'";
+			print_r($sql);
 			$this->DB->query($sql);
 		}
 	}

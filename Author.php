@@ -142,10 +142,13 @@ class Author
 			$sql = "UPDATE authors SET ";
 			foreach($fields as $fieldCode => $fieldVal)
 			{
-				$sql .= $fieldCode." = ".$fieldVal;
+				$sql .= $fieldCode . " = " . "'" . $fieldVal . "', ";
 			}
-			$sql .= "WHERE ID = '$id'";
+			$sql = trim($sql, " ");
+			$sql = trim($sql, ",");
+			$sql .= " WHERE ID = '$id'";
 			$this->DB->query($sql);
+			print_r($sql);
 		}
 	}
 }

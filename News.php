@@ -147,8 +147,10 @@ class News
 			$sql = "UPDATE news SET ";
 			foreach($fields as $fieldCode => $fieldVal)
 			{
-				$sql .= $fieldCode." = ".$fieldVal;
+				$sql .= $fieldCode . " = " . "'" .  $fieldVal . "', ";
 			}
+			$sql = trim($sql, " ");
+			$sql = trim($sql, ",");
 			$sql .= "WHERE ID = '$id'";
 			$this->DB->query($sql);
 		}

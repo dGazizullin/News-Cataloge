@@ -85,7 +85,7 @@ class Category
 	public function getParents(int $categoryID)
 	{
 		$result = [];
-		$query = "SELECT PARENT_ID FROM incl_categories WHERE CATEGORY_ID = '$categoryID'";
+		$query = "SELECT PARENT_ID FROM parent_categories WHERE CATEGORY_ID = '$categoryID'";
 		$arRes = $this->DB->query($query);
 		foreach($arRes as $res)
 		{
@@ -104,7 +104,7 @@ class Category
 	{
 		$query = "DELETE FROM categories WHERE ID = '$id'";
 		$delete = $this->DB->query($query);
-		$query = "DELETE FROM incl_categories WHERE CATEGORY_ID = '$id' OR PARENT_ID = '$id'";
+		$query = "DELETE FROM parent_categories WHERE CATEGORY_ID = '$id' OR PARENT_ID = '$id'";
 		$deleteParents = $this->DB->query($query);
 		$query = "DELETE FROM news_categories WHERE CATEGORY_ID = '$id'";
 		$deleteNews = $this->DB->query($query);
@@ -129,7 +129,6 @@ class Category
 				$sql .= $fieldCode . " = " . "'" . $fieldVal . "'";
 			}
 			$sql .= " WHERE ID = '$id'";
-			print_r($sql);
 			$this->DB->query($sql);
 		}
 	}
@@ -138,14 +137,14 @@ class Category
 	{
 		if($childID != $parentID)
 		{
-			$query = "INSERT INTO incl_categories SET CATEGORY_ID = '$childID', PARENT_ID = '$parentID'";
+			$query = "INSERT INTO parent_categories SET CATEGORY_ID = '$childID', PARENT_ID = '$parentID'";
 			return $this->DB->query($query);
 		}
 	}
 
 	public function deleteParent(int $childID, int $parentID)
 	{
-		$query = "DELETE FROM incl_categories WHERE PARENT_ID = '$parentID' AND CATEGORY_ID = '$childID'";
+		$query = "DELETE FROM parent_categories WHERE PARENT_ID = '$parentID' AND CATEGORY_ID = '$childID'";
 		return $this->DB->query($query);
 	}
 }

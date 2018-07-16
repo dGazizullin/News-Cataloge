@@ -135,6 +135,10 @@ class Author
 		}
 		if($author['AVATAR'] != $avatar)
 		{
+			$fields['AVATAR'] = $avatar;
+		}
+		if($author['SIGN'] != $sign)
+		{
 			$fields['SIGN'] = $sign;
 		}
 		if(!empty($fields))
@@ -144,11 +148,9 @@ class Author
 			{
 				$sql .= $fieldCode . " = " . "'" . $fieldVal . "', ";
 			}
-			$sql = trim($sql, " ");
-			$sql = trim($sql, ",");
+			$sql = substr($sql, 0, -2);
 			$sql .= " WHERE ID = '$id'";
 			$this->DB->query($sql);
-			print_r($sql);
 		}
 	}
 }

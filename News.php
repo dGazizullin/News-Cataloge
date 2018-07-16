@@ -149,26 +149,25 @@ class News
 			{
 				$sql .= $fieldCode . " = " . "'" .  $fieldVal . "', ";
 			}
-			$sql = trim($sql, " ");
-			$sql = trim($sql, ",");
+			$sql = substr($sql, 0, -2);
 			$sql .= "WHERE ID = '$id'";
 			$this->DB->query($sql);
 		}
 	}
 
-	public function setCategory(int $newsID, int $categoryID)//работает
+	public function setCategory(int $newsID, int $categoryID)
 	{
 		$query = "INSERT INTO news_categories VALUES (NULL, '$newsID', '$categoryID')";
 		return $this->DB->query($query);
 	}
 
-	public function addAuthor(int $newsID, int $authorID)//работает
+	public function addAuthor(int $newsID, int $authorID)
 	{
 		$query = "INSERT INTO news_authors VALUES (NULL, '$newsID', '$authorID')";
 		return $this->DB->query($query);
 	}
 
-	public function deleteAuthor(int $newsID, int $authorID)//работает
+	public function deleteAuthor(int $newsID, int $authorID)
 	{
 		$query = "DELETE FROM news_authors WHERE NEWS_ID = $newsID AND AUTHOR_ID = $authorID";
 		return $this->DB->query($query);

@@ -12,7 +12,7 @@ $news = new News;
 
 //print_r($test = $news->(2,2));
 //print_r($test = $author->edit(2,'Ксения','dsa','dsa','dsa', 'выф'));
-print_r($category->edit(2, 'cat 2'));
+print_r($author->edit(1, 'dsa', 'dsa', 'dsa', 'dsa', 'dsa'));
 
 /*
 print_r($add = $category->add(4, "category"));

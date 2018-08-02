@@ -2,17 +2,18 @@
 ini_set('display_errors','On');
 error_reporting(E_ALL|E_STRICT);
 
-include "Category.php";
-include "Author.php";
-include "News.php";
+include "./classes/Category.php";
+include "./classes/Author.php";
+include "./classes/News.php";
 
 $category = new Category;
 $author = new Author;
 $news = new News;
 
-//print_r($test = $news->(2,2));
-//print_r($test = $author->edit(2,'Ксения','dsa','dsa','dsa', 'выф'));
-print_r($author->edit(1, 'dsa', 'dsa', 'dsa', 'dsa', 'dsa'));
+print_r($test = $author->getList(2, 'ID'));
+//print_r($test = $author->add('vasya2','фамилия','отчество','ava', 'sign'));
+
+
 
 /*
 print_r($add = $category->add(4, "category"));

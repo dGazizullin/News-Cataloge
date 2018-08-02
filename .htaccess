@@ -1,0 +1,14 @@
+Options +FollowSymLinks
+ReWriteEngine On
+
+RewriteRule ^author/([0-9]+)/$ author/index.php?id=$1/ [NC,L]
+RewriteRule ^author/$ author/index.php?id=0/ [NC,L]
+RewriteRule ^author/.+[a-z]*.*/$ statusPages/page404.php/ [NC,L]
+
+RewriteRule ^news/([0-9]+)/$ news/index.php?id=$1/ [NC,L]
+RewriteRule ^news/$ news/index.php?id=0/ [NC,L]
+RewriteRule ^news/.+[a-z]*.*/$ statusPages/page404.php/ [NC,L]
+
+RewriteRule ^category/([0-9]+)/$ category/index.php?id=$1/ [NC,L]
+RewriteRule ^category/$ category/index.php?id=0/ [NC,L]
+RewriteRule ^category/.+[a-z]*.*/$ statusPages/page404.php/ [NC,L]

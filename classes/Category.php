@@ -195,8 +195,7 @@ class Category
 	{
 		if($childId != $parentId)
 		{
-			this option is used in add function
-			if($parentId <= 0)
+			if($parentId <= 0 || $parentId == null)
 			{
 				$query = "INSERT INTO parent_categories SET CATEGORY_ID = '$childId', PARENT_ID = 0, NESTING = 0";
 				return $this->DB->query($query);
@@ -207,34 +206,84 @@ class Category
 				foreach ($nestingArr as $parentNesting)
 				{
 					$query = "INSERT INTO parent_categories SET CATEGORY_ID = '$childId', PARENT_ID = '$parentId', NESTING = $parentNesting + 1";
-					print_r($query);
 					$this->DB->query($query);
+					$this->deleteParent($childId, 0);
 				}
 			}
-		// 	if($childId != $parentId)
-		// 	{
-		// 		$query = "INSERT INTO parent_categories SET CATEGORY_ID = $childId, PARENT_ID = $parentId";
-		// 		$this->DB->query($query);
-		// 	}
-		// }
-	}
-
-	public function childrenCheck($id, $childrenIds)
-	{
-		$childrenIds = $this->getChildren($id);
-		var_dump($childrenIds);
-		foreach ($childrenIds as $childId)
-		{
-			$childrenIds += $this->childrenCheck($childId, $childrenIds);
+			//getting IDs of root categories
+			$roots = $this->getRootCat();
+			foreach ($roots as $root)
+			{
+				$rootIds[] = $root['CATEGORY_ID'];
+			}
+			foreach ($rootIds as $rootId)
+			{
+				try
+				{
+					$rel = $this->getRelations();
+					$this->getTree($rel, $rootId);
+				} catch (Exception $e)
+				{
+					$this->deleteParent($childId, $parentId);
+				}
+			}
 		}
 	}
-	
+
 	public function getNestings($id)
 	{
 		$query = "SELECT NESTING FROM parent_categories WHERE CATEGORY_ID = $id";
+		$res = $this->DB->query($query);
+		return $res;
+	}
+
+	public function getRelations()
+	{
+		$query = "SELECT CATEGORY_ID, PARENT_ID FROM parent_categories";
+		$resAr = $this->DB->query($query);
+		//delete duplicates
+		foreach ($resAr as $res)
+		{
+			if($res != $prevRes)
+			{
+				$result[] = $res;
+				$prevRes = $res;
+			}
+		}
+		return $result;
+	}
+
+	public function getRootCat()
+	{
+		$query = "SELECT * FROM parent_categories WHERE PARENT_ID = 0";
 		return $this->DB->query($query);
 	}
 
+	public function getTree($tree, $parentId, $counter = 0)
+	{
+		$query = "SELECT COUNT(*) FROM parent_categories";
+		$maxCounter = $this->DB->query($query);
+		$maxCounter = $maxCounter[0];
+		if($counter > $maxCounter['COUNT(*)'])
+		{
+			throw new Exception('Невозможно выполнить операцию.');
+		}
+	    $html = '<ul>' . "\n";
+		$ul = false;
+	    foreach ($tree as $row)
+	    {
+	        if ($row['PARENT_ID'] == $parentId)
+	        {
+	            $html .= '	<li>' . "\n";
+	            $html .= '	' . $this->getById($row['CATEGORY_ID'])->getName() . "\n";
+	            $html .= '		' . $this->getTree($tree, $row['CATEGORY_ID'], ++$counter);
+	            $html .= '	</li>' . "\n";
+	            $ul = true;
+	        }
+	    }
+	    $html .= '</ul>' . "\n";
+		return $html = ($ul) ? $html : "";
+	}
 
 	public function deleteParent(int $childId, int $parentId)
 	{

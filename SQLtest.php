@@ -10,7 +10,25 @@ $category = new Category;
 $author = new Author;
 $news = new News;
 
-print_r($test = $author->getList(2, 'ID'));
+$arr = $category-> getRelations();
+// print_r($arr);
+echo '<br>';
+
+
+$tree = $category->getTree($arr, 107);
+echo $tree;
+echo '<br>';
+echo '<br>';
+echo '<br>';
+echo '<br>';
+$tree = $category->getTree($arr, 120);
+echo $tree;
+//var_dump($tree);
+// $category->get(5, "1/2/4");
+// $category = $category->getTree();
+// var_dump($asd);
+//var_dump($nest);
+//var_dump($test);
 //print_r($test = $author->add('vasya2','фамилия','отчество','ava', 'sign'));
 
 

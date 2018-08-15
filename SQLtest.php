@@ -15,14 +15,18 @@ $arr = $category-> getRelations();
 echo '<br>';
 
 
-$tree = $category->getTree($arr, 107);
-echo $tree;
-echo '<br>';
-echo '<br>';
-echo '<br>';
-echo '<br>';
-$tree = $category->getTree($arr, 120);
-echo $tree;
+$roots = $category->getRootCats();
+foreach ($roots as $root)
+{
+	$rootIds[] = $root['CATEGORY_ID'];
+}
+foreach ($rootIds as $rootId)
+{
+	$rel = $category->getRelations();
+	$root = $category->getById($rootId);
+	echo $root->getName().'<br>';
+	echo $category->getTree($rel, $rootId);
+}
 //var_dump($tree);
 // $category->get(5, "1/2/4");
 // $category = $category->getTree();

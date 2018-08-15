@@ -211,7 +211,7 @@ class Category
 				}
 			}
 			//getting IDs of root categories
-			$roots = $this->getRootCat();
+			$roots = $this->getRootCats();
 			foreach ($roots as $root)
 			{
 				$rootIds[] = $root['CATEGORY_ID'];
@@ -253,7 +253,7 @@ class Category
 		return $result;
 	}
 
-	public function getRootCat()
+	public function getRootCats()
 	{
 		$query = "SELECT * FROM parent_categories WHERE PARENT_ID = 0";
 		return $this->DB->query($query);
@@ -290,5 +290,4 @@ class Category
 		$query = "DELETE FROM parent_categories WHERE PARENT_ID = '$parentId' AND CATEGORY_ID = '$childId'";
 		return $this->DB->query($query);
 	}
-
 }

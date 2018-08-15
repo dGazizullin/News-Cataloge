@@ -1,35 +1,50 @@
-	<?php
+<?php
 include_once 'DB.php';
 class News
 {
-	public $ID;
+	public $id;
 	public $header;
 	public $announcement;
 	public $text;
 	public $catIds = [];
+	public $sort;
 	private $DB;
 
-	public function __construct($ID = NULL, $header = '', $announcement = '', $text = '', $catIds = '')
+	public function __construct($id = NULL, $header = '', $announcement = '', $text = '', $catIds = '', $sort = 0)
 	{
-		if(!empty($ID) && !empty($header) && !empty($announcement) && !empty($text) && !empty($catIds))
+		if(!empty($id) && !empty($header) && !empty($announcement) && !empty($text) && !empty($catIds))
 		{
-			$this->setID($ID);
+			$this->setId($id);
 			$this->setHeader($header);
 			$this->setAnnouncement($announcement);
 			$this->setText($text);
 			$this->setCat($catIds);
+			$this->setSort(intval($sort));
 		}
 		$this->DB = new DB();
 	}
 
-	public function getID()
+	public function getId()
 	{
-		return $this->ID;
+		return $this->id;
 	}
 
-	public function setID(int $ID)
+	public function setId(int $id)
 	{
-		$this->ID = $ID;
+		if($id > 0)
+		{
+			$this->id = $id;
+		}
+	}
+
+	public function getSort()
+	{
+		return $this->sort;
+	}
+
+	public function setSort($sort)
+	{
+		$this->sort = $sort;
 	}
 
 	public function getHeader()
@@ -81,37 +96,50 @@ class News
 		}
 	}
 
-	public function getList($limit = 2)
+	//returns list of all news
+	public function getList($limit = 999, $sort = 0)
 	{
-		if(intval($limit) > 0)
+		if(intval($limit) > 0 && intval($sort) >= 0)
 		{
 			$list = [];
-			$arRes = $this->DB->query("SELECT * FROM news LIMIT $limit");
+			$query = "SELECT * FROM news WHERE SORT >= $sort LIMIT $limit";
+			$arRes = $this->DB->query($query);
 			foreach ($arRes as $row)
 			{
-				$list[] = new self($row['ID'], $row['HEADER'], $row['ANNOUNCEMENT'], $row['NEWS_TEXT'], $catIds = [NULL]);
+				$list[] = new self($row['ID'], $row['HEADER'], $row['ANNOUNCEMENT'], $row['NEWS_TEXT'], $catIds = [NULL], $row['SORT']);
 			}
 			return $list;
 		}
 		return false;
 	}
 
-	public function getByID($ID = 0)
+	public function getById($id = 0)
 	{
-		if($ID > 0)
+		if($id > 0)
 		{
-			$arRes = $this->DB->query("SELECT * FROM news WHERE ID = '$ID'");
+			$query = "SELECT * FROM news WHERE ID = '$id'";
+			$arRes = $this->DB->query($query);
 			foreach ($arRes as $res)
 			{
-				return new self($res['ID'], $res['HEADER'], $res['ANNOUNCEMENT'], $res['NEWS_TEXT'], $catIds = [1]);
+				return new self($res['ID'], $res['HEADER'], $res['ANNOUNCEMENT'], $res['NEWS_TEXT'], $catIds = [1], $res['SORT']);
 			}
 		}
 		return false;
 	}
 
-	public function add(string $announcement, string $text, string $header)
+	public function getLastId()
 	{
-		$query = "INSERT INTO news SET ANNOUNCEMENT = '$announcement', NEWS_TEXT = '$text', HEADER = '$header'";
+			$query = "SELECT ID from news where ID = (SELECT MAX(ID) FROM news)";
+			$result = $this->DB->query($query);
+			//extract int value from arrays
+			$result = $result[0];
+			$result = $result["ID"];
+			return $result;
+	}
+
+	public function add(string $announcement, string $text, string $header, int $sort)
+	{
+		$query = "INSERT INTO news SET ANNOUNCEMENT = '$announcement', NEWS_TEXT = '$text', HEADER = '$header', SORT = '$sort'";
 		return $this->DB->query($query);
 	}
 
@@ -127,9 +155,10 @@ class News
 		}		
 	}
 
-	public function edit(int $id, string $announcement, string $text, string $header)
+	public function edit(int $id, string $announcement, string $text, string $header, int $sort)
 	{
 		$news = $this->DB->query("SELECT * FROM news WHERE ID = '$id'");
+		$news = $news[0];
 		if($news['ANNOUNCEMENT'] != $announcement)
 		{
 			$fields['ANNOUNCEMENT'] = $announcement;
@@ -141,6 +170,10 @@ class News
 		if($news['HEADER'] != $header)
 		{
 			$fields['HEADER'] = $header;
+		}
+		if(intval($news['SORT']) != intval($sort))
+		{
+			$fields['SORT'] = intval($sort);
 		}
 		if(!empty($fields))
 		{
@@ -155,37 +188,43 @@ class News
 		}
 	}
 
-	public function setCategory(int $newsID, int $categoryID)
+	public function setCategory(int $newsId, int $categoryId)
 	{
-		$query = "INSERT INTO news_categories VALUES (NULL, '$newsID', '$categoryID')";
+		$query = "INSERT INTO news_categories VALUES (NULL, '$newsId', '$categoryId')";
 		return $this->DB->query($query);
 	}
 
-	public function addAuthor(int $newsID, int $authorID)
+	public function addAuthor(int $newsId, int $authorId)
 	{
-		$query = "INSERT INTO news_authors VALUES (NULL, '$newsID', '$authorID')";
+		$query = "INSERT INTO news_authors VALUES (NULL, '$newsId', '$authorId')";
 		return $this->DB->query($query);
 	}
 
-	public function deleteAuthor(int $newsID, int $authorID)
+	//delete 1 row from news_authors table
+	public function deleteAuthor(int $newsId, int $authorId)
 	{
-		$query = "DELETE FROM news_authors WHERE NEWS_ID = $newsID AND AUTHOR_ID = $authorID";
+		$query = "DELETE FROM news_authors WHERE NEWS_ID = $newsId AND AUTHOR_ID = $authorId";
 		return $this->DB->query($query);
 	}
 
 	//delete all news links by given author ID 
-	public function deleteWholeAuthor(int $ID)
+	public function deleteWholeAuthor(int $newsId)
 	{
-		$query = "DELETE FROM news_authors WHERE NEWS_ID = $ID";
-		return $this->DB->query($query);// 
+		$query = "DELETE FROM news_authors WHERE NEWS_ID = $newsId";
+		return $this->DB->query($query);
 	}
 
 	//delete all categories links by given news ID
-	public function deleteCategories(int $ID)
+	public function deleteCategories(int $newsId)
 	{
-		$query = "DELETE FROM news_categories WHERE NEWS_ID = $ID";
+		$query = "DELETE FROM news_categories WHERE NEWS_ID = $newsId";
 		return $this->DB->query($query);
+	}
 
+	public function deleteCategory(int $newsId, int $categoryId)
+	{
+		$query = "DELETE FROM news_categories WHERE NEWS_ID = $newsId AND CATEGORY_ID = $categoryId";
+		return $this->DB->query($query);
 	}
 
 	public function getCategories($newsId)

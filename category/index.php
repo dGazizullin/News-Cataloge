@@ -4,14 +4,14 @@ $category = new category();
 $id = htmlspecialchars($_GET["id"]);
 if($id > 0)
 {
-	$category = $category->getByID($id);
+	$category = $category->getById($id);
 }?>
 <html>
 <head>
 	<title>
 		<?if($category && $id != 0)
 		{
-			echo $title = $category->getName();
+			echo $category->getName();
 		}else if($id == 0)
 		{
 			echo 'Categories';
@@ -19,17 +19,17 @@ if($id > 0)
 		{
 			echo 'Ошибка';
 		}?>
-	</title>	
+	</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 	<?if(intval($id) > 0 && $category)
 	{
 		include 'table.php';
-	}
-	else if($id == 0 && $category)
+	}else if($id == 0 && $category)
 	{
 		$category = new category();
-		$catsAr = $category->getList(99);?>
+		$catsAr = $category->getList(99, 1);?>
 		<ul>
 			<?foreach($catsAr as $catAr):?>
 				<li>

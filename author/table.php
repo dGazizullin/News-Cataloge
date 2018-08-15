@@ -1,13 +1,15 @@
-<?include "../classes/News.php";?>
+<?
+include_once "../classes/News.php";?>
 <table border = "1" cellpadding="20">
 	<caption>Authors</caption>
 	<th>ID</th>
-	<th>firstName</th>
-	<th>lastName</th>
-	<th>patronimic</th>
-	<th>avatar</th>
-	<th>sign</th>
-	<th>news</th>
+	<th>Firstname</th>
+	<th>Lastname</th>
+	<th>Patronimic</th>
+	<th>Avatar</th>
+	<th>Sign</th>
+	<th>News</th>
+	<th>Sort</th>
 	<tr>
 		<td><?echo $author->getId();?></td>
 		<td><?echo $author->getFirstName();?></td>
@@ -22,11 +24,12 @@
 				$newsId = $news->getId();
 				echo "<a href='/news/$newsId/'>";
 				$new = new news;
-				$new = $new->getByID($newsId);
+				$new = $new->getById($newsId);
 				echo $new->getHeader();
 				echo '</a>'.'<br>';
 			}
 			echo "</pre>";?>
 		</td>
+		<td><?echo $author->getSort()?></td>
 	</tr>
 </table>

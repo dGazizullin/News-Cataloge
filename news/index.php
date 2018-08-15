@@ -4,14 +4,14 @@ $news = new news();
 $id = htmlspecialchars($_GET["id"]);
 if($id > 0)
 {
-	$news = $news->getByID($id);
+	$news = $news->getById($id);
 }?>
 <html>
 <head>
 	<title>
 		<?if($news && $id != 0)
 		{
-			echo $title = $news->getHeader();
+			echo $news->getHeader();
 		}else if($id == 0)
 		{
 			echo "News";
@@ -20,16 +20,16 @@ if($id > 0)
 			echo 'Ошибка';
 		}?>
 	</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 	<?if(intval($id) > 0 && $news)
 	{
 		include 'table.php';
-	}
-	else if($id == 0 && $news)
+	}else if($id == 0 && $news)
 	{
 		$news = new news();
-		$arNews = $news->getList(99);?>
+		$arNews = $news->getList(99, 1);?>
 		<ul>
 			<?foreach($arNews as $arNew):?>
 				<li>

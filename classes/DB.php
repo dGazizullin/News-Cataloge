@@ -1,5 +1,4 @@
 <?
-
 class DB
 {
 	public $host = "localhost";

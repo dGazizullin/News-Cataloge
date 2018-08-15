@@ -4,6 +4,7 @@
 	<th>Name</th>
 	<th>Parent categories</th>
 	<th>Child categories</th>
+	<th>Sort</th>
 	<tr>
 		<td><?echo $category->getId();?></td>
 		<td><?echo $category->getName();?></td>
@@ -13,7 +14,7 @@
 				{
 					echo "<a href='/category/$catId/'>";
 					$cat = new category;
-					$cat = $cat->getByID($catId);
+					$cat = $cat->getById($catId);
 					echo $cat->getName();
 					echo '</a>'.'<br>';
 				}?>
@@ -24,10 +25,11 @@
 				{
 					echo "<a href='/category/$catId/'>";
 					$category = new category;
-					$category = $category->getByID($catId);
+					$category = $category->getById($catId);
 					echo $category->getName();
 					echo '</a>'.'<br>';
 				}?>
 		</td>
+		<td><?echo $category->getSort()?></td>
 	</tr>
 </table>

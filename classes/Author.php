@@ -2,13 +2,15 @@
 include_once "DB.php";
 class Author
 {
+	public $id;
 	public $lastName;
 	public $firstName;
 	public $patronimic;
 	public $avatar;
 	public $sign;
+	public $sort;
 	private $DB;
-	public function __construct($lastName = "", $firstName = "", $patronimic = "", $avatar = "", $sign = "", $ID = 0) 
+	public function __construct($lastName = "", $firstName = "", $patronimic = "", $avatar = "", $sign = "", $id = 0, $sort = 0) 
 	{
 		if(!empty($lastName) && !empty($firstName) && !empty($patronimic) && !empty($avatar) && !empty($sign))
 		{
@@ -17,21 +19,33 @@ class Author
 			$this->setPatronimic($patronimic);
 			$this->setAv($avatar);
 			$this->setSign($sign);
-			$this->setId($ID);
+			$this->setId($id);
+			$this->setSort(intval($sort));
 		}
 		$this->DB = new DB();
 	}
 
-	public function setId(int $ID)
+	public function setId(int $id)
 	{
-		if(intval($ID) > 0) {
-			$this->ID = $ID;
+		if(intval($id) > 0)
+		{
+			$this->id = $id;
 		}
 	}
 
 	public function getId()
 	{
-		return $this->ID;
+		return $this->id;
+	}
+
+	public function setSort(int $sort)
+	{
+		$this->sort = $sort;
+	}
+
+	public function getSort()
+	{
+		return $this->sort;
 	}
 
 	public function getLastName()
@@ -84,63 +98,76 @@ class Author
 		$this->sign = $sign;
 	}
 	
-	public function getList($limit = 2)
+	//returns list of all news
+	public function getList($limit = 99, $sort = 0)
 	{
-		if(intval($limit) > 0)
+		if(intval($limit) > 0 && intval($sort) >= 0)
 		{
 			$list = [];
-			$arRes = $this->DB->query("SELECT * FROM authors LIMIT $limit");
+			$query = "SELECT * FROM authors WHERE SORT >= $sort LIMIT $limit";
+			$arRes = $this->DB->query($query);
 			foreach ($arRes as $res)
 			{
-				$list[] = new self($res['LASTNAME'], $res['FIRSTNAME'], $res['PATRONIMIC'], $res['AVATAR'], $res['SIGN'], $res["ID"]); 
+				$list[] = new self($res['LASTNAME'], $res['FIRSTNAME'], $res['PATRONIMIC'], $res['AVATAR'], $res['SIGN'], $res["ID"], $res['SORT']); 
 			}
 			return $list;
 		}
 		return false;
 	}
 
-	public function getByID(int $ID = 0)
+	public function getByID($id = 0)
 	{
-		if($ID > 0)
+		if($id > 0)
 		{
-			$arRes = $this->DB->query("SELECT * FROM authors WHERE ID = '$ID'");
+			$query = "SELECT * FROM authors WHERE ID = '$id'";
+			$arRes = $this->DB->query($query);
 			foreach ($arRes as $res)
 			{
-				return new self($res['LASTNAME'], $res['FIRSTNAME'], $res['PATRONIMIC'], $res['AVATAR'], $res['SIGN'], $res["ID"]);
+				return new self($res['LASTNAME'], $res['FIRSTNAME'], $res['PATRONIMIC'], $res['AVATAR'], $res['SIGN'], $res["ID"], $res['SORT']);
 			}
 		}
 		return false;
+	}
+
+	public function getLastId()
+	{
+			$query = "SELECT ID from authors where ID = (SELECT MAX(ID) FROM authors)";
+			$result = $this->DB->query($query);
+			//extract int value from arrays
+			$result = $result[0];
+			$result = $result["ID"];
+			return $result;
 	}
 
 	//returns list of authors ID's
 	public function getIds()
 	{
 		return $this->DB->query("SELECT ID FROM authors");
-
 	}
 
-	public function add(string $firstName, string $lastName, string $patronimic, string $avatar, string $sign)
+	public function add(string $firstName, string $lastName, string $patronimic, string $avatar, string $sign, int $sort)
 	{
-		$query = "INSERT INTO authors SET FIRSTNAME = '$firstName', LASTNAME = '$lastName', PATRONIMIC = '$patronimic', AVATAR = '$avatar', SIGN = '$sign'";
+		$query = "INSERT INTO authors SET FIRSTNAME = '$firstName', LASTNAME = '$lastName', PATRONIMIC = '$patronimic', AVATAR = '$avatar', SIGN = '$sign', SORT = '$sort'";
 		return $this->DB->query($query);
 	}
 
-	public function delete(int $id)
+	public function delete(int $id = 0)
 	{
 		$query1 = "DELETE FROM authors WHERE ID = $id";
 		$delete = $this->DB->query($query1);
-		$news = new news;
-		$deleteTrace = $news->deleteWholeAuthor($id);
+		$query2 = "DELETE FROM news_authors WHERE AUTHOR_ID = $id";
+		$deleteTrace = $this->DB->query($query2);
 		if($delete && $deleteTrace)
 		{
 			return $delete;
 		}
-		return false;
 	}
 
-	public function edit(int $id, string $firstName, string $lastName, string $patronimic, string $avatar, string $sign)
+	public function edit(int $id, string $firstName, string $lastName, string $patronimic, string $avatar, string $sign, int $sort)
 	{
-		$author = $this->DB->query("SELECT * FROM author WHERE ID = '$id'");
+		$query = "SELECT * FROM authors WHERE ID = '$id'";
+		$author = $this->DB->query($query);
+		$author = $author[0];
 		if($author['FIRSTNAME'] != $firstName)
 		{
 			$fields['FIRSTNAME'] = $firstName;
@@ -161,12 +188,16 @@ class Author
 		{
 			$fields['SIGN'] = $sign;
 		}
+		if(intval($author['SORT']) != intval($sort))
+		{
+			$fields['SORT'] = intval($sort);
+		}
 		if(!empty($fields))
 		{
 			$sql = "UPDATE authors SET ";
 			foreach($fields as $fieldCode => $fieldVal)
 			{
-				$sql .= $fieldCode . " = " . "'" . $fieldVal . "', ";
+				$sql .= $fieldCode." = "."'".$fieldVal."', ";
 			}
 			$sql = substr($sql, 0, -2);
 			$sql .= " WHERE ID = '$id'";
@@ -179,9 +210,11 @@ class Author
 	{
 		$result = [];
 		$query = "SELECT NEWS_ID FROM news_authors WHERE AUTHOR_ID = '$authorId'";
+		include_once './News.php';
 		$new = new news;
 		foreach($this->DB->query($query) as $news)
 		{
+			$new->getById($news["NEWS_ID"]);
 			$result[] = $new->getById($news["NEWS_ID"]);
 		}
 		return $result;

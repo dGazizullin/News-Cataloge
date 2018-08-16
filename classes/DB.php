@@ -10,10 +10,6 @@ class DB
 	function __construct()
 	{
 		$this->connection = mysqli_connect($this->host, $this->login, $this->pass, $this->dbName) or die("NO CONNECTION: " . mysqli_error());
-		if (!$this->connection)
-		{
-			die('Ошибка соединения: ' . mysqli_connect_errno());
-		}
 	}
 
 	public function query(string $query = "")

@@ -1,6 +1,6 @@
 <?
-ini_set('display_errors','On');
-error_reporting(E_ALL|E_STRICT);
+// ini_set('display_errors','On');
+// error_reporting(E_ALL|E_STRICT);
 
 include "./classes/Category.php";
 include "./classes/Author.php";
@@ -11,10 +11,7 @@ $author = new Author;
 $news = new News;
 
 $arr = $category-> getRelations();
-// print_r($arr);
 echo '<br>';
-
-
 $roots = $category->getRootCats();
 foreach ($roots as $root)
 {

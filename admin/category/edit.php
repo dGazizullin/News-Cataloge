@@ -108,6 +108,9 @@ if ($_POST)
 		<title>Edit category</title>
 	</head>
 	<body>
+<?var_dump($_POST) ;?>
+
+
 	<?if($_POST['SAVE'] == "SAVE"):
 		header("Location: /admin/category/");
 		exit;
@@ -163,33 +166,28 @@ if ($_POST)
 						<label>Категория входит в:</label>
 						<?
 						$category = new category;
-						$catsList = $category->getList(99, 1);
-						//output list of categories
-						foreach($catsList as $catArr)
+						//getting root's IDs
+						$roots = $category->getRootCats();
+						foreach ($roots as $root)
 						{
-							if($catArr->getId() == $id)
-							{
-								continue;
-							}?>
+							$rootIds[] = $root['CATEGORY_ID'];
+						}
+						//building trees for every root category
+						foreach ($rootIds as $rootId):?>
 							<br>
-							<input type="checkbox" name="CATEGORY<?echo $catArr->getId()?>"
-							<?
-							//add 'checked' attribute to categories
-							$curIds = $category->getParents($id);
-							foreach ($curIds as $curCatId)
-							{
-								if($catArr->getId() == $curCatId)
-								{
+							<?$rel = $category->getRelations();
+							//output root category?>
+							<input type="checkbox" id="categories" name="CATEGORY<?echo $rootId?>"
+							<?$curIds = $category->getParents($id);
+							foreach ($curIds as $curId):
+								if($rootId == $curId):
 									echo " checked";
-								}
-							}
-							?>>
-							<div style="display: inline; margin-left: 10;">
-									<a href="/category/<?=$catArr->getId()?>/">
-										<?=$catArr->getName()?>
-									</a>
-							</div><?
-						}?>
+								endif;
+							endforeach;?>>
+
+							<a href="/category/<?echo $rootId?>"><?echo $category->getById($rootId)->getName()?></a>
+							<?echo $category->getTree($rel, $rootId, 0, $id);							
+						endforeach;?>
 					</div>
 				</div>
 				<div class="btn-group row">

@@ -259,7 +259,7 @@ class Category
 		return $this->DB->query($query);
 	}
 
-	public function getTree($tree, $parentId, $counter = 0)
+	public function getTree($tree, $parentId, $counter = 0, $idToCheck = 0)
 	{
 		$query = "SELECT COUNT(*) FROM parent_categories";
 		$maxCounter = $this->DB->query($query);
@@ -270,17 +270,22 @@ class Category
 		}
 	    $html = '<ul>' . "\n";
 		$ul = false;
-	    foreach ($tree as $row)
-	    {
-	        if ($row['PARENT_ID'] == $parentId)
-	        {
+	    foreach ($tree as $row):
+	        if ($row['PARENT_ID'] == $parentId):
 	            $html .= '	<li>' . "\n";
-	            $html .= '	' . $this->getById($row['CATEGORY_ID'])->getName() . "\n";
-	            $html .= '		' . $this->getTree($tree, $row['CATEGORY_ID'], ++$counter);
+	            $html .= '	'.'<input type="checkbox" name="CATEGORY'.$row['CATEGORY_ID'].'"';
+	            $curIds = $this->getParents($idToCheck);
+					foreach ($curIds as $curId):
+						if($row['CATEGORY_ID'] == $curId):
+							$html .= " checked";
+						endif;
+					endforeach;
+	            $html .= "><a href='/category/" . $row['CATEGORY_ID'] . "''>" . $this->getById($row['CATEGORY_ID'])->getName() . "</a>";
+	            $html .= '		' . $this->getTree($tree, $row['CATEGORY_ID'], ++$counter, $idToCheck);
 	            $html .= '	</li>' . "\n";
 	            $ul = true;
-	        }
-	    }
+	        endif;
+	    endforeach;
 	    $html .= '</ul>' . "\n";
 		return $html = ($ul) ? $html : "";
 	}

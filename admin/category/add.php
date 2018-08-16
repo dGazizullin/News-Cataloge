@@ -1,6 +1,7 @@
 <?php
 include_once '../../classes/Category.php';
-include_once '../../classes/News.php';?>
+include_once '../../classes/News.php';
+?>
 <?if ($_POST)
 {
     //add data into categories table
@@ -84,15 +85,20 @@ include_once '../../classes/News.php';?>
 					<div class="form-group col">
 						<label>Категория входит в:</label>
 						<?$category = new category();
-						$catsAr = $category->getList(99, 1);?>
-						<?foreach($catsAr as $catAr):?>
+						//getting root's IDs
+						$roots = $category->getRootCats();
+						foreach ($roots as $root)
+						{
+							$rootIds[] = $root['CATEGORY_ID'];
+						}
+						//building trees for every root category
+						foreach($rootIds as $rootId):?>
 							<br>
-							<input type="checkbox" id='categories' name="CATEGORY<?echo $catAr->getId()?>">
-								<div style="display: inline; margin-left: 10;">
-									<a href="/category/<?=$catAr->getId()?>/">
-										<?=$catAr->getName()?>
-									</a>
-								</div>
+							<input type="checkbox" id="categories" name="CATEGORY<?echo $rootId?>">
+							
+							<a href="/category/<?echo $rootId?>"><?echo $category->getById($rootId)->getName()?></a>
+							<?$rel = $category->getRelations();
+							echo $category->getTree($rel, $rootId);?>
 						<?endforeach;?>
 					</div>
 				</div>

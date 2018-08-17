@@ -198,8 +198,8 @@ class Category
 		{
 			if($parentId <= 0 || $parentId == null)
 			{
-				$query = "INSERT INTO parent_categories SET CATEGORY_ID = '$childId', PARENT_ID = 0, NESTING = 0";
-				return $this->DB->query($query);
+				$query = "INSERT INTO parent_categories SET CATEGORY_ID = $childId, PARENT_ID = 0, NESTING = 0";
+				$this->DB->query($query);
 			}
 			//inserting new row into parent_categories table
 			$parentNestings = $this->getNestings($parentId);
@@ -266,9 +266,11 @@ class Category
 		return $this->DB->query($query);
 	}
 
-	public function getCategoryRows() {
-		$query = "SELECT COUNT(*) FROM parent_categories";
+	public function getParRowsNum()
+	{
+		$query = "SELECT count(*) FROM parent_categories";
 		$this->maxCounter = $this->DB->query($query);
+		$this->maxCounter = $this->maxCounter[0];
 		return $this->maxCounter;
 	}
 
@@ -276,11 +278,12 @@ class Category
 	public function getTree($tree, $parentId, $counter = 0, $idToCheck = 0, $rootId, $uniqueId)
 	{
 		//if function is executed recursively more times than rows in parent_categories, throw Exception
-		if($this->maxCounter == 0) {
-			$this->maxCounter = $this->getCategoryRows();
+		if($counter == 0)
+		{
+			$this->maxCounter = $this->getParRowsNum();
 		}
-		$maxCounter = $maxCounter[0];
-		if($counter > $maxCounter['COUNT(*)'])
+
+		if($counter > $this->maxCounter["count(*)"] + 1)
 		{
 			throw new Exception('Невозможно выполнить операцию.');
 		}
@@ -316,9 +319,4 @@ class Category
 		$query = "DELETE FROM parent_categories WHERE PARENT_ID = '$parentId' AND CATEGORY_ID = '$childId'";
 		return $this->DB->query($query);
 	}
-}
-
-
-class AdminCategory extends Category {
-	
 }

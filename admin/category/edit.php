@@ -1,17 +1,21 @@
 <?php
+// ini_set('display_errors','On');
+// error_reporting(E_ALL|E_STRICT);
 include_once '../../classes/Author.php';
 include_once '../../classes/Category.php';
 include_once '../../classes/News.php';
 
-if ($_POST)
+if ($_POST['edit'] == 'edit')
 {
+	echo $_POST;
     //add data into categories table
 	$category = new category;
 	$news = new news;
-	//getting instance of category 
+	//getting instance of category
 	$id = intval(htmlspecialchars($_GET["id"]));
 	$category = $category->getById($id);
 	//edit category instance
+	var_dump($_POST);
     $category->edit($id, $_POST['NAME'], intval($_POST['SORT']));
     //extracting chosen news IDs from _POST
 	$keysArr = array_keys($_POST, 'on');
@@ -209,11 +213,13 @@ if ($_POST)
 						endforeach;?>
 					</div>
 				</div>
+				<input type="text" name='edit' hidden>
 				<div class="btn-group row">
 					<button  type="submit" class="btn btn-outline-primary btn-lg" form='editForm' name='SAVE' value='SAVE'>Сохранить</button>
 					<button type="submit" class="btn btn-outline-primary btn-lg col-auto" form="editForm" name='APPLY' value='APPLY'>Применить</button>
 					<a href="/admin/category/" class="btn btn-outline-danger btn-lg col-auto">Отмена</a>
 				</div>
+				<input type="text" name="edit" value="edit" hidden>
 			</form>
 		</div>
 	</body>

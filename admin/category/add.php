@@ -1,9 +1,13 @@
 <?php
+// ini_set('display_errors','On');
+// error_reporting(E_ALL|E_STRICT);
+
 include_once '../../classes/Category.php';
 include_once '../../classes/News.php';
-if ($_POST)
+if ($_POST['add'] == 'add')
 {
     //add data into categories table
+    var_dump($_POST);
 	$category = new category;
 	$news = new news;
     $category->add($_POST['NAME'], intval($_POST['SORT']));
@@ -89,7 +93,7 @@ if ($_POST)
 				</div>
 				<div class="form-group">
 					<label for="sort">Сортировка</label>
-					<input type="text" class="form-control" id="sort" placeholder="Введите сортировочный номер:" value="10" pattern="^[0-9]+$" name="SORT" required>
+					<input type="text" class="form-control" id="sort" placeholder="Введите сортировочный номер:" value="10" pattern="^[0-9]+$" name="SORT"hidden required>
 				</div>
 				<div class="row">
 					<div class="form-group col-3">
@@ -117,7 +121,7 @@ if ($_POST)
 						}
 						//building trees for every root category
 						foreach($rootIds as $rootId):?>
-							<br
+							<br>
 							<input type="checkbox" id="<?echo $rootId?>" name="CATEGORY<?echo $rootId?>">
 							<a href="/category/<?echo $rootId?>"><?echo $category->getById($rootId)->getName()?></a>
 							<?$rel = $category->getRelations();
@@ -130,6 +134,7 @@ if ($_POST)
 					<button type="submit" class="btn btn-outline-primary btn-lg" form="addForm" name="APPLY" value="APPLY">Применить</button>
 					<a href="/admin/category/" class="btn btn-outline-danger btn-lg">Отмена</a>
 				</div>
+				<input type="text" name="add" value="add" hidden>
 			</form>
 		</div>
 	</body>

@@ -105,16 +105,36 @@ if ($_POST)
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+		<script>
+			function syncChecks(id, name)
+			{
+				var curChBox = document.getElementById(id);
+				var relChBoxs = document.getElementsByName(name);
+				if(curChBox.checked == false)
+				{
+					for(var i = 0; i < relChBoxs.length; ++i)
+					{
+						var rel = relChBoxs[i];
+						$(rel).prop('checked', false);
+					}
+				}else
+				{
+					for(var i = 0; i < relChBoxs.length; ++i)
+					{
+						var rel = relChBoxs[i];
+						$(rel).prop('checked', true);
+					}
+				}
+			}			
+		</script>
 		<title>Edit category</title>
 	</head>
 	<body>
-<?var_dump($_POST) ;?>
-
-
-	<?if($_POST['SAVE'] == "SAVE"):
-		header("Location: /admin/category/");
-		exit;
-	endif;?>
+		<?if($_POST['SAVE'] == "SAVE"):
+			header("Location: /admin/category/");
+			exit;
+		endif;?>
 		<div class="container">
 			<div class="page-header">
 				<h1 style = 'text-align: center;'>Изменить категорию</h1>
@@ -129,7 +149,7 @@ if ($_POST)
 				</div>
 				<div class="form-group">
 					<label for="sort">Сортировка</label>
-					<input type="text" class="form-control" id="sort" placeholder="Введите сортировочный номер:" value="<?echo $category->getSort()?>" pattern="^[0-9]+$" name="SORT">
+					<input type="text" class="form-control" id="sort" placeholder="Введите сортировочный номер:" value="<?echo $category->getSort()?>" pattern="^[0-9]+$" name="SORT" required>
 				</div>
 				<div class="row">
 					<div class="form-group col-3">
@@ -177,16 +197,15 @@ if ($_POST)
 							<br>
 							<?$rel = $category->getRelations();
 							//output root category?>
-							<input type="checkbox" id="categories" name="CATEGORY<?echo $rootId?>"
+							<input type="checkbox" id="<?echo $rootId?>" name="CATEGORY<?echo $rootId?>"
 							<?$curIds = $category->getParents($id);
 							foreach ($curIds as $curId):
 								if($rootId == $curId):
 									echo " checked";
 								endif;
 							endforeach;?>>
-
 							<a href="/category/<?echo $rootId?>"><?echo $category->getById($rootId)->getName()?></a>
-							<?echo $category->getTree($rel, $rootId, 0, $id);							
+							<?echo $category->getTree($rel, $rootId, 0, $id, $rootId, '');						
 						endforeach;?>
 					</div>
 				</div>

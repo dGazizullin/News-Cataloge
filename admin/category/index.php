@@ -75,16 +75,14 @@ include_once '../../classes/News.php';?>
 									<div class="parentCategories">
 									 	<strong>Категория входит в:</strong>
 									 	<?$catsIds = $category->getParents($category->getId());
-								 		foreach ($catsIds as $catId)
-								 		{?>
+								 		foreach ($catsIds as $catId):?>
 								 			<div>
 								 				<a href="/category/<?echo $catId?>"> 
-								 				<?
-								 				$cat = $category->getById($catId);
+								 				<?$cat = $category->getById($catId);
 								 				echo $cat->	getName();?>
 								 				</a>
-							 				</div><?
-								 		}?>
+							 				</div>
+								 		<?endforeach?>
 										<div class='sort'>
 											<strong>Сортировка:</strong>
 											<?

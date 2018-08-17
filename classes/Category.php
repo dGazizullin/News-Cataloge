@@ -9,6 +9,7 @@ class Category
 	public $parents = [];
 	public $sort;
 	private $DB;
+	public $maxCounter = 0;
 	public function __construct($id = NULL, $name = "", $parents = "", $sort = 0)
 	{
 		if(!empty($id) && !empty($name))
@@ -200,6 +201,7 @@ class Category
 				$query = "INSERT INTO parent_categories SET CATEGORY_ID = '$childId', PARENT_ID = 0, NESTING = 0";
 				return $this->DB->query($query);
 			}
+			//inserting new row into parent_categories table
 			$parentNestings = $this->getNestings($parentId);
 			foreach ($parentNestings as $nestingArr)
 			{
@@ -207,10 +209,12 @@ class Category
 				{
 					$query = "INSERT INTO parent_categories SET CATEGORY_ID = '$childId', PARENT_ID = '$parentId', NESTING = $parentNesting + 1";
 					$this->DB->query($query);
+					//delete row where new child is root category
 					$this->deleteParent($childId, 0);
 				}
 			}
-			//getting IDs of root categories
+			//check if new relation is correct(category tree can be built)
+			//getting root-categiries's IDs
 			$roots = $this->getRootCats();
 			foreach ($roots as $root)
 			{
@@ -221,7 +225,8 @@ class Category
 				try
 				{
 					$rel = $this->getRelations();
-					$this->getTree($rel, $rootId);
+					$this->getTree($rel, $rootId, 0, 0, 0, 0);
+					//if can't build tree, delete row from parent_categories table
 				} catch (Exception $e)
 				{
 					$this->deleteParent($childId, $parentId);
@@ -230,6 +235,7 @@ class Category
 		}
 	}
 
+	//gets all nestings of set ID
 	public function getNestings($id)
 	{
 		$query = "SELECT NESTING FROM parent_categories WHERE CATEGORY_ID = $id";
@@ -237,6 +243,7 @@ class Category
 		return $res;
 	}
 
+	//gets all unique relations from parent_categiries as an array
 	public function getRelations()
 	{
 		$query = "SELECT CATEGORY_ID, PARENT_ID FROM parent_categories";
@@ -259,21 +266,35 @@ class Category
 		return $this->DB->query($query);
 	}
 
-	public function getTree($tree, $parentId, $counter = 0, $idToCheck = 0)
-	{
+	public function getCategoryRows() {
 		$query = "SELECT COUNT(*) FROM parent_categories";
-		$maxCounter = $this->DB->query($query);
+		$this->maxCounter = $this->DB->query($query);
+		return $this->maxCounter;
+	}
+
+	//build the tree with root == $parentId
+	public function getTree($tree, $parentId, $counter = 0, $idToCheck = 0, $rootId, $uniqueId)
+	{
+		//if function is executed recursively more times than rows in parent_categories, throw Exception
+		if($this->maxCounter == 0) {
+			$this->maxCounter = $this->getCategoryRows();
+		}
 		$maxCounter = $maxCounter[0];
 		if($counter > $maxCounter['COUNT(*)'])
 		{
 			throw new Exception('Невозможно выполнить операцию.');
 		}
-	    $html = '<ul>' . "\n";
+		//start forming html
+	    $html = '<ul class="list-group">' . "\n";
 		$ul = false;
 	    foreach ($tree as $row):
 	        if ($row['PARENT_ID'] == $parentId):
-	            $html .= '	<li>' . "\n";
-	            $html .= '	'.'<input type="checkbox" name="CATEGORY'.$row['CATEGORY_ID'].'"';
+	            $html .= '<li class="list-group-item">' . "\n";
+	            //forming uniqueId for id attribute of checkbox
+	            $uniqueId .= $row['PARENT_ID'];
+	            $html .= '<input type="checkbox" id="' . $uniqueId.$row['CATEGORY_ID'] . '"name="CATEGORY'.$row['CATEGORY_ID'].'"';
+	            $html .= 'onchange="syncChecks(\''.$uniqueId.$row['CATEGORY_ID'] . '\', ' . '\'CATEGORY' . $row['CATEGORY_ID']."'" .')"';
+	            //mark checkboxes current category reffers to (in edit form)
 	            $curIds = $this->getParents($idToCheck);
 					foreach ($curIds as $curId):
 						if($row['CATEGORY_ID'] == $curId):
@@ -281,8 +302,8 @@ class Category
 						endif;
 					endforeach;
 	            $html .= "><a href='/category/" . $row['CATEGORY_ID'] . "''>" . $this->getById($row['CATEGORY_ID'])->getName() . "</a>";
-	            $html .= '		' . $this->getTree($tree, $row['CATEGORY_ID'], ++$counter, $idToCheck);
-	            $html .= '	</li>' . "\n";
+	            $html .=  $this->getTree($tree, $row['CATEGORY_ID'], ++$counter, $idToCheck, $rootId, $uniqueId);
+	            $html .= '</li>' . "\n";
 	            $ul = true;
 	        endif;
 	    endforeach;
@@ -295,4 +316,9 @@ class Category
 		$query = "DELETE FROM parent_categories WHERE PARENT_ID = '$parentId' AND CATEGORY_ID = '$childId'";
 		return $this->DB->query($query);
 	}
+}
+
+
+class AdminCategory extends Category {
+	
 }
